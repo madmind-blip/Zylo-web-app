@@ -1,0 +1,6 @@
+{
+  "name": "Zyle - Premium Look, Pocket Price",
+  "description": "Mobile-first showcase store for high-end combo clothes and affordable luxury watches in Kota, Rajasthan. Instant WhatsApp ordering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

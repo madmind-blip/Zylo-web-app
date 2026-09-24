@@ -1,0 +1,372 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useMemo } from 'react';
+import { OfferStrip } from './components/OfferStrip';
+import { Header } from './components/Header';
+import { Hero } from './components/Hero';
+import { CategoryChips, CategoryFilter } from './components/CategoryChips';
+import { ProductCard } from './components/ProductCard';
+import { ProductModal } from './components/ProductModal';
+import { ComboBuilder } from './components/ComboBuilder';
+import { ReviewsSection } from './components/ReviewsSection';
+import { FAQSection } from './components/FAQSection';
+import { Footer } from './components/Footer';
+import { CartDrawer } from './components/CartDrawer';
+import { PolicyModal, PolicyType } from './components/PolicyModal';
+import { PRODUCTS } from './data/products';
+import { BRAND } from './data/content';
+import { Product, CartItem } from './types';
+import { MessageCircle, Sparkles, Flame, Check, ArrowUp } from 'lucide-react';
+import { getWhatsAppNumberClean } from './utils/whatsapp';
+
+export default function App() {
+  // State
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('featured');
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [activePolicy, setActivePolicy] = useState<PolicyType>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Cart State (initialize with 1 popular combo for preview freshness)
+  const [cartItems, setCartItems] = useState<CartItem[]>([
+    {
+      id: 'init-cart-1',
+      product: PRODUCTS[0], // Stealth Urban Streetwear Combo
+      selectedSize: 'L (Oversized)',
+      quantity: 1,
+    },
+  ]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2800);
+  };
+
+  // Filter & Sort Logic
+  const filteredProducts = useMemo(() => {
+    let list = [...PRODUCTS];
+
+    // Search query filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.subtitle && p.subtitle.toLowerCase().includes(q)) ||
+          p.description.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+      );
+    }
+
+    // Category Chip Filter
+    if (selectedCategory === 'combos') {
+      list = list.filter((p) => p.category === 'combos');
+    } else if (selectedCategory === 'watches') {
+      list = list.filter((p) => p.category === 'watches');
+    } else if (selectedCategory === 'under-499') {
+      list = list.filter((p) => p.price <= 499);
+    } else if (selectedCategory === 'under-999') {
+      list = list.filter((p) => p.price <= 999);
+    } else if (selectedCategory === 'new-arrivals') {
+      list = list.filter((p) => p.isNewArrival);
+    }
+
+    // Sorting
+    if (sortBy === 'price-low') {
+      list.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-high') {
+      list.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'discount') {
+      list.sort((a, b) => {
+        const discA = (a.originalPrice - a.price) / a.originalPrice;
+        const discB = (b.originalPrice - b.price) / b.originalPrice;
+        return discB - discA;
+      });
+    } else {
+      // featured default
+      list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    }
+
+    return list;
+  }, [selectedCategory, searchQuery, sortBy]);
+
+  // Cart operations
+  const handleAddToCart = (product: Product, size?: string, quantity: number = 1) => {
+    const itemSize = size || (product.sizes?.[0] || 'Standard');
+    setCartItems((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.product.id === product.id && item.selectedSize === itemSize && !item.isCustomCombo
+      );
+      if (existingIndex > -1) {
+        const updated = [...prev];
+        updated[existingIndex].quantity += quantity;
+        return updated;
+      } else {
+        return [
+          ...prev,
+          {
+            id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            product,
+            selectedSize: itemSize,
+            quantity,
+          },
+        ];
+      }
+    });
+
+    showToast(`Added "${product.name}" (${itemSize}) to your bag`);
+  };
+
+  const handleAddCustomComboToCart = (
+    top: { product: Product; size: string },
+    bottom: { product: Product; size: string },
+    watch: { product: Product },
+    finalPrice: number
+  ) => {
+    // Generate synthetic combo product representation
+    const comboProduct: Product = {
+      id: `custom-combo-${Date.now()}`,
+      name: `Custom 3-Piece Outfit (${top.product.name} + ${bottom.product.name} + ${watch.product.name})`,
+      category: 'combos',
+      price: finalPrice,
+      originalPrice: Math.round(finalPrice / 0.9),
+      stock: 10,
+      images: [top.product.images[0], bottom.product.images[0], watch.product.images[0]],
+      description: 'Handcrafted custom 3-piece drip combo with 10% instant bundle discount.',
+      details: [
+        `Top: ${top.product.name} [Size: ${top.size}]`,
+        `Bottom: ${bottom.product.name} [Size: ${bottom.size}]`,
+        `Watch: ${watch.product.name}`,
+        '10% Instant Combo Discount applied',
+      ],
+    };
+
+    setCartItems((prev) => [
+      ...prev,
+      {
+        id: `combo-${Date.now()}`,
+        product: comboProduct,
+        selectedSize: 'Complete Set',
+        quantity: 1,
+        isCustomCombo: true,
+        comboItems: {
+          top: { name: top.product.name, size: top.size },
+          bottom: { name: bottom.product.name, size: bottom.size },
+          watch: { name: watch.product.name },
+        },
+      },
+    ]);
+
+    showToast('Custom 3-Piece Combo added to your bag!');
+    setIsCartOpen(true);
+  };
+
+  const handleUpdateCartQuantity = (id: string, delta: number) => {
+    setCartItems((prev) =>
+      prev
+        .map((item) => {
+          if (item.id === id) {
+            const newQty = item.quantity + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean) as CartItem[]
+    );
+  };
+
+  const handleRemoveCartItem = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    showToast('Item removed from bag');
+  };
+
+  const scrollToCombos = () => {
+    const el = document.getElementById('products-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToBuilder = () => {
+    const el = document.getElementById('combo-builder');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const totalCartCount = cartItems.reduce((acc, it) => acc + it.quantity, 0);
+
+  const handleFloatingWhatsApp = () => {
+    const phone = getWhatsAppNumberClean();
+    const text = encodeURIComponent('Hi Zyle Team! 👋 I am browsing your store from Kota. I have a question about an order.');
+    window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] text-[#F3F4F6] selection:bg-[#D4AF37] selection:text-black">
+      {/* 7. Offer strip with countdown timer that resets daily */}
+      <OfferStrip />
+
+      {/* 1. Sticky header */}
+      <Header
+        cartCount={totalCartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+
+      <main>
+        {/* 2. Cinematic Hero */}
+        <Hero
+          onShopCombos={scrollToCombos}
+          onExploreBuilder={scrollToBuilder}
+        />
+
+        {/* 3. Category Chips and Filter bar */}
+        <div id="products-section">
+          <CategoryChips
+            activeCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            totalCount={filteredProducts.length}
+          />
+        </div>
+
+        {/* 4. Product Grid (2 columns on mobile, 4 on desktop) */}
+        <section className="py-10 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="text-[10px] sm:text-xs uppercase font-bold tracking-widest text-[#D4AF37] mb-1">
+                Pocket Price Luxury
+              </div>
+              <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-white">
+                {selectedCategory === 'combos'
+                  ? 'Ready Streetwear Combos'
+                  : selectedCategory === 'watches'
+                  ? 'Luxury Wristwatches Under ₹500'
+                  : selectedCategory === 'under-499'
+                  ? 'Budget Steals Under ₹499'
+                  : selectedCategory === 'under-999'
+                  ? 'Combos & Fits Under ₹999'
+                  : 'Trending Kota Drops'}
+              </h2>
+            </div>
+
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-xs text-[#D4AF37] hover:underline cursor-pointer"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+
+          {filteredProducts.length === 0 ? (
+            <div className="py-16 text-center bg-[#141414] border border-[#242424] rounded-3xl p-8">
+              <h3 className="font-heading font-bold text-lg text-white mb-2">
+                No items matching "{searchQuery}"
+              </h3>
+              <p className="text-xs text-zinc-400 mb-6">
+                Try searching for 'combo', 'gold watch', or 'tactical cargo'.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+                className="px-6 py-2 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs"
+              >
+                Reset Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onSelect={(p) => setActiveProduct(p)}
+                  onAddToCart={(p, e) => {
+                    e.stopPropagation();
+                    handleAddToCart(p);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 6. COMBO BUILDER: 1 top + 1 bottom + 1 watch, live price + 10% discount */}
+        <ComboBuilder
+          products={PRODUCTS}
+          onAddComboToCart={handleAddCustomComboToCart}
+        />
+
+        {/* Dedicated section anchors for nav */}
+        <div id="combos-section" />
+        <div id="watches-section" />
+
+        {/* 8. Customer Reviews Section */}
+        <ReviewsSection />
+
+        {/* 9. FAQ Section */}
+        <FAQSection />
+      </main>
+
+      {/* 10. Footer */}
+      <Footer onOpenPolicy={(type) => setActivePolicy(type)} />
+
+      {/* 5. Product Detail Popup Modal */}
+      <ProductModal
+        product={activeProduct}
+        onClose={() => setActiveProduct(null)}
+        onAddToCart={(product, size, qty) => {
+          handleAddToCart(product, size, qty);
+        }}
+      />
+
+      {/* Cart Drawer */}
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        items={cartItems}
+        onUpdateQuantity={handleUpdateCartQuantity}
+        onRemoveItem={handleRemoveCartItem}
+        onShopCombos={scrollToCombos}
+      />
+
+      {/* Policy Modal */}
+      <PolicyModal
+        type={activePolicy}
+        onClose={() => setActivePolicy(null)}
+      />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#141414] border border-[#D4AF37] text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-heading font-bold animate-bounce">
+          <Check className="w-4 h-4 text-[#D4AF37]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Floating WhatsApp Action on Mobile & Desktop */}
+      <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40">
+        <button
+          onClick={handleFloatingWhatsApp}
+          className="group relative flex items-center gap-2 px-3.5 sm:px-4 py-3 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-black font-heading font-extrabold text-xs sm:text-sm shadow-2xl shadow-[#25D366]/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          aria-label="Order or Chat on WhatsApp"
+        >
+          <MessageCircle className="w-5 h-5 fill-black stroke-black shrink-0" />
+          <span className="hidden sm:inline font-bold">Order on WhatsApp</span>
+          <span className="sm:hidden font-bold">WhatsApp</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-950 animate-ping absolute top-1 right-1" />
+        </button>
+      </div>
+    </div>
+  );
+}
