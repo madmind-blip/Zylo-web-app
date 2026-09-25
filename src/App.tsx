@@ -15,6 +15,7 @@ import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { PolicyModal, PolicyType } from './components/PolicyModal';
+import { CinematicIntro } from './components/CinematicIntro';
 import { PRODUCTS } from './data/products';
 import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
@@ -22,6 +23,9 @@ import { MessageCircle, Check } from 'lucide-react';
 import { getWhatsAppNumberClean } from './utils/whatsapp';
 
 export default function App() {
+  // First-visit cinematic entry screen (React state only, not localStorage)
+  const [showIntro, setShowIntro] = useState<boolean>(true);
+
   // Products loaded directly from the provided CSV product array
   const [products] = useState<Product[]>(PRODUCTS);
 
@@ -232,6 +236,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#F3F4F6] selection:bg-[#D4AF37] selection:text-black">
+      {/* Cinematic entry / loading screen (plays once per session, skip on tap) */}
+      {showIntro && <CinematicIntro onComplete={() => setShowIntro(false)} />}
+
       {/* 7. Offer strip with countdown timer that resets daily */}
       <OfferStrip />
 
