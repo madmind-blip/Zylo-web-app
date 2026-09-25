@@ -17,7 +17,6 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { PolicyModal, PolicyType } from './components/PolicyModal';
 import { CinematicIntro } from './components/CinematicIntro';
-import { SheetSettingsModal } from './components/SheetSettingsModal';
 import { PRODUCTS } from './data/products';
 import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
@@ -29,19 +28,17 @@ export default function App() {
   // First-visit cinematic entry screen (React state only, not localStorage)
   const [showIntro, setShowIntro] = useState<boolean>(true);
 
-  // Products loaded dynamically from the published Google Sheet CSV
+  // Products loaded dynamically from the published Google Sheet CSV (permanent data source)
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [activeSheetUrl, setActiveSheetUrl] = useState<string>(PUBLISHED_SHEET_CSV_URL);
-  const [isSheetModalOpen, setIsSheetModalOpen] = useState<boolean>(false);
 
-  // Live fetch function
-  const loadProducts = useCallback(async (targetUrl: string = activeSheetUrl) => {
+  // Live fetch function permanently wired to published Google Sheet CSV
+  const loadProducts = useCallback(async () => {
     setIsLoading(true);
     setFetchError(null);
     try {
-      const fetched = await fetchProductsFromSheetUrl(targetUrl);
+      const fetched = await fetchProductsFromSheetUrl(PUBLISHED_SHEET_CSV_URL);
       setProducts(fetched);
     } catch (err: any) {
       console.error('Failed to load products from Google Sheet:', err);
@@ -52,12 +49,12 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeSheetUrl]);
+  }, []);
 
   // Load products on mount
   useEffect(() => {
-    loadProducts(PUBLISHED_SHEET_CSV_URL);
-  }, []);
+    loadProducts();
+  }, [loadProducts]);
 
   // Navigation & Filter State
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
@@ -278,7 +275,6 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onOpenSheetModal={() => setIsSheetModalOpen(true)}
       />
 
       <main>
@@ -354,7 +350,7 @@ export default function App() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
-                  onClick={() => loadProducts(activeSheetUrl)}
+                  onClick={() => loadProducts()}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#E5C158] transition-all cursor-pointer shadow-lg shadow-[#D4AF37]/20"
                 >
                   <RefreshCw className="w-4 h-4" />
@@ -449,28 +445,6 @@ export default function App() {
       <PolicyModal
         type={activePolicy}
         onClose={() => setActivePolicy(null)}
-      />
-
-      {/* Google Sheet Sync Modal */}
-      <SheetSettingsModal
-        isOpen={isSheetModalOpen}
-        onClose={() => setIsSheetModalOpen(false)}
-        currentUrl={activeSheetUrl}
-        onSaveUrl={async (newUrl) => {
-          setActiveSheetUrl(newUrl);
-          await loadProducts(newUrl);
-          showToast('Synced with Google Sheet!');
-        }}
-        onLoadCustomProducts={(custom) => {
-          setProducts(custom);
-          showToast(`Loaded ${custom.length} products`);
-        }}
-        onResetDefault={() => {
-          setActiveSheetUrl(PUBLISHED_SHEET_CSV_URL);
-          loadProducts(PUBLISHED_SHEET_CSV_URL);
-          showToast('Reset to default sheet');
-        }}
-        isLoading={isLoading}
       />
 
       {/* Toast Notification */}

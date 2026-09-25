@@ -11,16 +11,6 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) =>
   const [isExiting, setIsExiting] = useState(false);
   const completedRef = useRef(false);
 
-  const handleSkipOrFinish = () => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    setIsExiting(true);
-    // Smooth fast exit
-    setTimeout(() => {
-      onComplete();
-    }, 280);
-  };
-
   useEffect(() => {
     // 0.82s: Switch from phrase to wordmark animation
     const phraseTimer = setTimeout(() => {
@@ -51,20 +41,15 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) =>
 
   return (
     <div
-      onClick={handleSkipOrFinish}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
-          handleSkipOrFinish();
-        }
-      }}
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0A0A0A] select-none cursor-pointer overflow-hidden transition-all duration-300 ease-out ${
+      className={`fixed inset-0 z-[9999] w-screen h-screen min-h-[100dvh] flex flex-col items-center justify-center bg-[#0A0A0A] select-none overflow-hidden transition-all duration-300 ease-out ${
         isExiting ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
-      aria-label="Skip introduction"
+      aria-hidden="true"
     >
-      {/* Subtle background ambient pulse */}
+      {/* Solid black base to guarantee nothing bleeds through from behind */}
+      <div className="absolute inset-0 bg-[#0A0A0A]" />
+
+      {/* Subtle background ambient glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
 
       {/* Main Container */}
@@ -118,11 +103,6 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) =>
             </p>
           </div>
         )}
-      </div>
-
-      {/* Discreet Tap to skip hint at bottom */}
-      <div className="absolute bottom-6 sm:bottom-8 z-10 text-[10px] sm:text-xs text-zinc-600 font-body tracking-wider uppercase opacity-75 hover:opacity-100 transition-opacity">
-        Tap anywhere to skip
       </div>
     </div>
   );
