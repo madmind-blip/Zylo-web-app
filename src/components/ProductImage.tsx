@@ -33,7 +33,6 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   }, [src]);
 
   const handleError = () => {
-    // If it fails to load, show a neutral dark placeholder with the product name, never a broken image icon.
     setHasError(true);
   };
 
@@ -44,30 +43,27 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   if (hasError || !currentSrc) {
     return (
       <div
-        className={`w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-[#181818] to-[#101010] border border-[#242424] text-center select-none relative overflow-hidden ${
+        className={`w-full h-full flex flex-col items-center justify-center p-4 bg-neutral-100 border border-neutral-200 text-center select-none relative overflow-hidden ${
           isSoldOut ? 'opacity-60 grayscale' : ''
         }`}
       >
-        {/* Subtle background ambient ring */}
-        <div className="absolute w-32 h-32 rounded-full bg-[#D4AF37]/5 blur-xl pointer-events-none" />
-
         <div className="relative z-10 flex flex-col items-center justify-center max-w-[90%]">
-          {/* Neutral luxury icon */}
-          <div className="w-12 h-12 rounded-2xl bg-[#0A0A0A] border border-[#242424] flex items-center justify-center text-[#D4AF37] mb-2.5 shadow-inner">
+          {/* Neutral minimal icon */}
+          <div className="w-11 h-11 rounded-xl bg-white border border-neutral-200 flex items-center justify-center text-neutral-600 mb-2 shadow-2xs">
             {isWatch ? (
-              <Watch className="w-6 h-6 stroke-[1.5]" />
+              <Watch className="w-5 h-5 stroke-[1.5]" />
             ) : (
-              <Shirt className="w-6 h-6 stroke-[1.5]" />
+              <Shirt className="w-5 h-5 stroke-[1.5]" />
             )}
           </div>
 
           {/* Product Name in Syne */}
-          <span className="font-heading font-bold text-xs sm:text-sm text-zinc-300 line-clamp-2 leading-snug">
+          <span className="font-heading font-semibold text-xs sm:text-sm text-neutral-800 line-clamp-2 leading-snug">
             {productName}
           </span>
 
           {/* Discreet brand watermark */}
-          <span className="mt-1 text-[9px] uppercase tracking-widest font-heading font-semibold text-[#D4AF37]/60">
+          <span className="mt-1 text-[9px] uppercase tracking-widest font-heading font-medium text-neutral-400">
             Zyle Kota
           </span>
         </div>
@@ -76,11 +72,11 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-zinc-950">
-      {/* Loading shimmer before image arrives */}
+    <div className="relative w-full h-full overflow-hidden bg-neutral-100">
+      {/* Loading placeholder before image arrives */}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-[#161616] animate-pulse flex items-center justify-center">
-          <Package className="w-6 h-6 text-zinc-700 animate-pulse" />
+        <div className="absolute inset-0 bg-neutral-100 flex items-center justify-center">
+          <Package className="w-5 h-5 text-neutral-400 animate-pulse" />
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, MessageCircle, HelpCircle, Sparkles } from 'lucide-react';
-import { FAQS, BRAND } from '../data/content';
+import { ChevronDown, MessageCircle, HelpCircle } from 'lucide-react';
+import { FAQS } from '../data/content';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 
 export const FAQSection: React.FC = () => {
@@ -17,20 +17,19 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq-section" className="py-16 sm:py-24 bg-[#0A0A0A] border-b border-[#242424]">
+    <section id="faq-section" className="py-16 sm:py-24 bg-white border-b border-neutral-200/80">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#141414] border border-[#242424] text-xs font-semibold text-[#D4AF37] mb-3">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Clear & Honest Policies</span>
+        <div className="text-center max-w-xl mx-auto mb-10 sm:mb-14">
+          <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-2">
+            Clear & Transparent
           </div>
 
-          <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-white uppercase tracking-tight mb-3">
+          <h2 className="font-heading font-bold text-2xl sm:text-4xl text-[#1A1A1A] tracking-tight mb-3">
             FREQUENTLY ASKED
           </h2>
 
-          <p className="font-body text-zinc-400 text-sm sm:text-base">
+          <p className="font-body text-neutral-600 text-sm sm:text-base leading-relaxed">
             Everything you need to know about deliveries, cash on delivery, sizes, and instant WhatsApp ordering.
           </p>
         </div>
@@ -42,8 +41,10 @@ export const FAQSection: React.FC = () => {
             return (
               <div
                 key={idx}
-                className={`bg-[#141414] border rounded-2xl overflow-hidden transition-all duration-200 ${
-                  isOpen ? 'border-[#D4AF37]/50 shadow-md shadow-black/40' : 'border-[#242424] hover:border-zinc-700'
+                className={`bg-white border rounded-xl overflow-hidden transition-all duration-200 ${
+                  isOpen
+                    ? 'border-neutral-400 shadow-xs'
+                    : 'border-neutral-200 hover:border-neutral-300'
                 }`}
               >
                 <button
@@ -52,22 +53,22 @@ export const FAQSection: React.FC = () => {
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded-md border border-[#D4AF37]/20 shrink-0">
+                    <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded shrink-0">
                       {faq.category}
                     </span>
-                    <span className="font-heading font-bold text-sm sm:text-base text-white">
+                    <span className="font-heading font-semibold text-sm sm:text-base text-[#1A1A1A]">
                       {faq.question}
                     </span>
                   </div>
                   <ChevronDown
-                    className={`w-5 h-5 text-zinc-400 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-[#D4AF37]' : ''
+                    className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 text-[#1A1A1A]' : ''
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm font-body text-zinc-300 leading-relaxed border-t border-[#242424]/60">
+                  <div className="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm font-body text-neutral-600 leading-relaxed border-t border-neutral-100">
                     {faq.answer}
                   </div>
                 )}
@@ -77,21 +78,21 @@ export const FAQSection: React.FC = () => {
         </div>
 
         {/* WhatsApp Help Banner */}
-        <div className="mt-10 p-5 rounded-2xl bg-gradient-to-r from-[#141414] via-[#1a1710] to-[#141414] border border-[#D4AF37]/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-10 p-5 sm:p-6 rounded-2xl bg-neutral-50 border border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <h4 className="font-heading font-bold text-base text-white">
+            <h4 className="font-heading font-bold text-base text-[#1A1A1A]">
               Have a special custom question?
             </h4>
-            <p className="text-xs text-zinc-400 font-body">
-              Chat live with our Kota team on WhatsApp for size recommendation or instant video view of pieces.
+            <p className="text-xs text-neutral-500 font-body">
+              Chat live with our Kota team on WhatsApp for size recommendations or instant photos of pieces.
             </p>
           </div>
 
           <button
             onClick={handleAskWhatsApp}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-black font-heading font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#25D366]/20 shrink-0 cursor-pointer active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-colors shrink-0 cursor-pointer active:scale-98 shadow-xs"
           >
-            <MessageCircle className="w-4 h-4 fill-black stroke-black" />
+            <MessageCircle className="w-4 h-4" />
             <span>Chat on WhatsApp</span>
           </button>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Instagram, MapPin, Phone, ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { MessageCircle, Instagram, MapPin, Phone, ShieldCheck, Heart } from 'lucide-react';
 import { BRAND } from '../data/content';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 import { PolicyType } from './PolicyModal';
@@ -16,29 +16,29 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
   };
 
   return (
-    <footer className="bg-[#0A0A0A] border-t border-[#242424] text-zinc-400 font-body">
+    <footer id="about-section" className="bg-white border-t border-neutral-200 text-neutral-600 font-body">
       {/* Top Banner inside Footer */}
-      <div className="border-b border-[#242424] py-8 bg-[#141414]/50">
+      <div className="border-b border-neutral-200 py-8 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[#1A1A1A]">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <div className="font-heading font-bold text-white text-base">
+              <div className="font-heading font-semibold text-[#1A1A1A] text-sm sm:text-base">
                 Direct WhatsApp Ordering System
               </div>
-              <div className="text-xs text-zinc-400">
-                No slow payment gateway forms. Immediate confirmation from Kota dispatch.
+              <div className="text-xs text-neutral-500">
+                Direct confirmation and instant dispatch tracking from our Kota hub.
               </div>
             </div>
           </div>
 
           <button
             onClick={handleWhatsApp}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-black font-heading font-extrabold text-xs sm:text-sm transition-all shadow-lg shadow-[#25D366]/20 cursor-pointer active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-colors cursor-pointer active:scale-98 shadow-xs"
           >
-            <MessageCircle className="w-4 h-4 fill-black stroke-black" />
+            <MessageCircle className="w-4 h-4" />
             <span>Chat +91 7073765833</span>
           </button>
         </div>
@@ -49,66 +49,67 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
           {/* Brand Info */}
           <div className="space-y-4">
             <div className="flex items-baseline gap-1">
-              <span className="font-heading font-extrabold text-3xl tracking-tight text-white">
+              <span className="font-heading font-extrabold text-2xl tracking-tight text-[#1A1A1A]">
                 ZYLE
               </span>
-              <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1A1A1A]"></span>
             </div>
 
-            <p className="font-heading font-bold text-sm text-[#D4AF37]">
+            <p className="font-heading font-medium text-xs sm:text-sm text-neutral-700">
               {BRAND.tagline}
             </p>
 
-            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              Democratizing high-street drip. We curate heavyweight streetwear combo clothes and luxury-finish wristwatches at honest pocket prices.
+            <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed">
+              Curated streetwear combo clothes and high-finish wristwatches at accessible prices. Dispatched directly from Kota, Rajasthan.
             </p>
 
-            {/* Social Icons */}
-            <div className="flex items-center gap-3 pt-2">
+            {/* Social Icons & Handle */}
+            <div className="flex items-center gap-2.5 pt-2 flex-wrap">
               <a
-                href={BRAND.instagramUrl}
+                href="https://instagram.com/zyle.store_"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#141414] border border-[#242424] hover:border-[#D4AF37] text-zinc-300 hover:text-[#D4AF37] flex items-center justify-center transition-all cursor-pointer"
-                aria-label="Follow Zyle on Instagram"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-200 hover:border-neutral-400 text-neutral-700 hover:text-black transition cursor-pointer text-xs font-medium"
+                aria-label="Follow Zyle on Instagram @zyle.store_"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 h-4 text-[#1A1A1A]" />
+                <span>@zyle.store_</span>
               </a>
 
               <button
                 onClick={handleWhatsApp}
-                className="w-10 h-10 rounded-full bg-[#141414] border border-[#242424] hover:border-[#25D366] text-zinc-300 hover:text-[#25D366] flex items-center justify-center transition-all cursor-pointer"
+                className="w-9 h-9 rounded-lg bg-neutral-50 border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black flex items-center justify-center transition cursor-pointer"
                 aria-label="Order on WhatsApp"
+                title="WhatsApp Chat"
               >
-                <MessageCircle className="w-5 h-5" />
+                <MessageCircle className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* Quick Categories */}
           <div>
-            <h4 className="font-heading font-bold text-white text-sm uppercase tracking-wider mb-4">
+            <h4 className="font-heading font-semibold text-[#1A1A1A] text-xs uppercase tracking-wider mb-4">
               Collections
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <a href="#combos-section" className="hover:text-[#D4AF37] transition-colors">
+                <a href="#combos-section" className="hover:text-[#1A1A1A] transition-colors">
                   Streetwear Ready Combos
                 </a>
               </li>
               <li>
-                <a href="#watches-section" className="hover:text-[#D4AF37] transition-colors">
+                <a href="#watches-section" className="hover:text-[#1A1A1A] transition-colors">
                   Luxury Pocket Watches
                 </a>
               </li>
               <li>
-                <a href="#combo-builder" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1.5 text-[#D4AF37] font-semibold">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Custom 3-Piece Combo Builder
+                <a href="#combo-builder" className="hover:text-[#4A5D45] transition-colors font-medium">
+                  Custom Bundle Builder
                 </a>
               </li>
               <li>
-                <a href="#faq-section" className="hover:text-[#D4AF37] transition-colors">
+                <a href="#faq-section" className="hover:text-[#1A1A1A] transition-colors">
                   Ordering & Delivery FAQ
                 </a>
               </li>
@@ -117,14 +118,14 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
 
           {/* Customer Care & Policies */}
           <div>
-            <h4 className="font-heading font-bold text-white text-sm uppercase tracking-wider mb-4">
+            <h4 className="font-heading font-semibold text-[#1A1A1A] text-xs uppercase tracking-wider mb-4">
               Help & Policies
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li>
                 <button
                   onClick={() => onOpenPolicy('shipping')}
-                  className="hover:text-[#D4AF37] transition-colors text-left cursor-pointer"
+                  className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
                   Shipping & Kota Dispatch (₹999 Free)
                 </button>
@@ -132,7 +133,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
               <li>
                 <button
                   onClick={() => onOpenPolicy('returns')}
-                  className="hover:text-[#D4AF37] transition-colors text-left cursor-pointer"
+                  className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
                   7-Day Size Exchange & Returns
                 </button>
@@ -140,7 +141,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
               <li>
                 <button
                   onClick={() => onOpenPolicy('cod')}
-                  className="hover:text-[#D4AF37] transition-colors text-left cursor-pointer"
+                  className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
                   Cash on Delivery (COD) Terms
                 </button>
@@ -148,7 +149,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
               <li>
                 <button
                   onClick={() => onOpenPolicy('sizing')}
-                  className="hover:text-[#D4AF37] transition-colors text-left cursor-pointer"
+                  className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
                   Streetwear Size & Fit Chart
                 </button>
@@ -158,47 +159,50 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
 
           {/* Location & Contact */}
           <div className="space-y-3">
-            <h4 className="font-heading font-bold text-white text-sm uppercase tracking-wider mb-4">
+            <h4 className="font-heading font-semibold text-[#1A1A1A] text-xs uppercase tracking-wider mb-4">
               Store & Dispatch Hub
             </h4>
             
             <div className="flex items-start gap-2.5 text-xs sm:text-sm">
-              <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-neutral-500 shrink-0 mt-0.5" />
               <span>
-                <strong>Kota, Rajasthan, India</strong> <br />
+                <strong className="text-[#1A1A1A]">Kota, Rajasthan, India</strong> <br />
                 {BRAND.fullAddress}
               </span>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-              <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href={`tel:${BRAND.whatsappNumber}`} className="hover:text-white font-mono">
+              <Phone className="w-4 h-4 text-neutral-500 shrink-0" />
+              <a href={`tel:${BRAND.whatsappNumber}`} className="hover:text-black font-mono">
                 {BRAND.whatsappDisplay}
               </a>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs sm:text-sm">
-              <Instagram className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href={BRAND.instagramUrl} target="_blank" rel="noreferrer" className="hover:text-white">
-                {BRAND.instagramHandle}
+              <Instagram className="w-4 h-4 text-neutral-500 shrink-0" />
+              <a
+                href="https://instagram.com/zyle.store_"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black font-medium"
+              >
+                @zyle.store_
               </a>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#141414] border border-[#242424] text-xs">
-              <span className="text-emerald-400 font-semibold">● Operating Hours:</span> 10:00 AM – 9:00 PM (Mon–Sun)
+            <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200 text-xs">
+              <span className="text-[#4A5D45] font-semibold">● Operating Hours:</span> 10:00 AM – 9:00 PM (Mon–Sun)
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-[#242424] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+        <div className="mt-12 pt-6 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div>
-            © {new Date().getFullYear()} Zyle Store. All rights reserved. Made for fashion enthusiasts in Kota, Rajasthan.
+            © {new Date().getFullYear()} Zyle Store. All rights reserved. Kota, Rajasthan.
           </div>
           <div className="flex items-center gap-1">
-            <span>Crafted with</span>
-            <Heart className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
-            <span>in Kota, Rajasthan</span>
+            <span>Crafted for streetwear enthusiasts in Kota, Rajasthan</span>
           </div>
         </div>
       </div>

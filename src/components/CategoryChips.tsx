@@ -18,67 +18,56 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
   onSortChange,
   totalCount,
 }) => {
-  const chips: { id: CategoryFilter; label: string; badge?: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'combos', label: 'Combos', badge: 'Combo Sets' },
-    { id: 'watches', label: 'Watches', badge: 'Hot' },
-    { id: 'under-1500', label: 'Under ₹1500' },
-    { id: 'under-2000', label: 'Under ₹2000' },
-    { id: 'under-2500', label: 'Under ₹2500' },
+  const chips: { id: CategoryFilter; label: string }[] = [
+    { id: 'all', label: 'All Pieces' },
+    { id: 'combos', label: 'Combos' },
+    { id: 'watches', label: 'Watches' },
+    { id: 'under-1500', label: 'Under ₹1,500' },
+    { id: 'under-2000', label: 'Under ₹2,000' },
+    { id: 'under-2500', label: 'Under ₹2,500' },
   ];
 
   return (
-    <div className="py-4 border-b border-[#242424] bg-[#0A0A0A]">
+    <div className="py-4 border-b border-neutral-200/80 bg-[#FAFAFA]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Scrollable Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {/* Scrollable Filter Buttons */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
             {chips.map((chip) => {
               const isActive = activeCategory === chip.id;
               return (
                 <button
                   key={chip.id}
                   onClick={() => onSelectCategory(chip.id)}
-                  className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-heading font-semibold transition-all duration-200 cursor-pointer ${
+                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-[#D4AF37] text-black shadow-md shadow-[#D4AF37]/20 scale-105'
-                      : 'bg-[#141414] text-zinc-300 hover:text-white border border-[#242424] hover:border-zinc-700'
+                      ? 'bg-[#1A1A1A] text-white font-semibold shadow-xs'
+                      : 'bg-white text-neutral-600 hover:text-black border border-neutral-200 hover:border-neutral-300'
                   }`}
                 >
-                  <span>{chip.label}</span>
-                  {chip.badge && (
-                    <span
-                      className={`text-[9px] px-1.5 py-0.2 rounded-full uppercase font-bold tracking-wider ${
-                        isActive
-                          ? 'bg-black text-[#D4AF37]'
-                          : 'bg-[#D4AF37]/20 text-[#D4AF37]'
-                      }`}
-                    >
-                      {chip.badge}
-                    </span>
-                  )}
+                  {chip.label}
                 </button>
               );
             })}
           </div>
 
           {/* Right: Count and Sort */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-zinc-400">
-            <span className="font-medium">
-              Showing <strong className="text-white">{totalCount}</strong> styles
+          <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-neutral-500">
+            <span>
+              Showing <strong className="text-[#1A1A1A] font-semibold">{totalCount}</strong> pieces
             </span>
 
-            <div className="flex items-center gap-1.5 bg-[#141414] border border-[#242424] rounded-xl px-2.5 py-1.5">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <div className="flex items-center gap-1.5 bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5 shadow-2xs">
+              <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-500" />
               <select
                 value={sortBy}
                 onChange={(e) => onSortChange(e.target.value)}
-                className="bg-transparent text-xs text-zinc-300 focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-[#1A1A1A] focus:outline-none cursor-pointer"
               >
-                <option value="featured" className="bg-[#141414] text-white">Featured</option>
-                <option value="price-low" className="bg-[#141414] text-white">Price: Low to High</option>
-                <option value="price-high" className="bg-[#141414] text-white">Price: High to Low</option>
-                <option value="discount" className="bg-[#141414] text-white">Biggest Discount</option>
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="discount">Biggest Discount</option>
               </select>
             </div>
           </div>

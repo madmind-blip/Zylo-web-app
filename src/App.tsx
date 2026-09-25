@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { OfferStrip } from './components/OfferStrip';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { CategoryChips, CategoryFilter } from './components/CategoryChips';
@@ -260,12 +259,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-[#F3F4F6] selection:bg-[#D4AF37] selection:text-black">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#1A1A1A] selection:bg-[#1A1A1A] selection:text-white">
       {/* Cinematic entry / loading screen (plays once per session, skip on tap) */}
       {showIntro && <CinematicIntro onComplete={() => setShowIntro(false)} />}
-
-      {/* 7. Offer strip with countdown timer that resets daily */}
-      <OfferStrip />
 
       {/* 1. Sticky header */}
       <Header
@@ -273,10 +269,11 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onSelectCategory={setSelectedCategory}
       />
 
       <main>
-        {/* 2. Cinematic Hero */}
+        {/* 2. Minimal Hero */}
         <Hero
           onShopCombos={scrollToCombos}
           onExploreBuilder={scrollToBuilder}
@@ -296,31 +293,31 @@ export default function App() {
         </div>
 
         {/* 4. Product Grid (2 columns on mobile, 4 on desktop) */}
-        <section className="py-10 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-6">
+        <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <div className="text-[10px] sm:text-xs uppercase font-bold tracking-widest text-[#D4AF37] mb-1">
-                Pocket Price Luxury • Kota Hub
+              <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-1">
+                Curated Collection • Kota Hub
               </div>
-              <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-white">
+              <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#1A1A1A]">
                 {selectedCategory === 'combos'
                   ? 'Clothing Combos'
                   : selectedCategory === 'watches'
-                  ? 'Luxury Watches Under Pocket Price'
+                  ? 'Luxury Watches'
                   : selectedCategory === 'under-1500'
-                  ? 'Best Sellers Under ₹1500'
+                  ? 'Curated Under ₹1,500'
                   : selectedCategory === 'under-2000'
-                  ? 'Best Sellers Under ₹2000'
+                  ? 'Curated Under ₹2,000'
                   : selectedCategory === 'under-2500'
-                  ? 'Best Sellers Under ₹2500'
-                  : 'All Trending Drops'}
+                  ? 'Curated Under ₹2,500'
+                  : 'All Pieces'}
               </h2>
             </div>
 
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-xs text-[#D4AF37] hover:underline cursor-pointer"
+                className="text-xs text-neutral-500 hover:text-black underline cursor-pointer"
               >
                 Clear search
               </button>
@@ -329,31 +326,30 @@ export default function App() {
 
           {isLoading ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs text-[#D4AF37] font-body tracking-wider uppercase mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+              <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium tracking-wider uppercase mb-2">
+                <span className="w-2 h-2 rounded-full bg-[#1A1A1A] animate-ping" />
                 Loading live catalog from Google Sheets...
               </div>
               <ProductSkeletonGrid count={8} />
             </div>
           ) : fetchError ? (
-            <div className="py-14 px-6 max-w-lg mx-auto text-center bg-[#141414] border border-amber-500/30 rounded-3xl shadow-2xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-[#D4AF37] shadow-inner">
-                <AlertCircle className="w-7 h-7" />
+            <div className="py-14 px-6 max-w-lg mx-auto text-center bg-white border border-neutral-200 rounded-2xl shadow-sm relative overflow-hidden">
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mx-auto mb-4 text-[#1A1A1A]">
+                <AlertCircle className="w-6 h-6" />
               </div>
-              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white mb-2">
+              <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-2">
                 Unable to Load Live Catalog
               </h3>
-              <p className="font-body text-xs sm:text-sm text-zinc-400 mb-6 max-w-md mx-auto leading-relaxed">
+              <p className="font-body text-xs sm:text-sm text-neutral-500 mb-6 max-w-md mx-auto leading-relaxed">
                 {fetchError}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => loadProducts()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#E5C158] transition-all cursor-pointer shadow-lg shadow-[#D4AF37]/20"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  <RefreshCw className="w-4 h-4" />
-                  Try Again
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Try Again</span>
                 </button>
                 <button
                   onClick={() => {
@@ -361,18 +357,18 @@ export default function App() {
                     setFetchError(null);
                     showToast('Loaded offline catalog');
                   }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#1c1c1c] text-zinc-300 hover:text-white border border-[#2e2e2e] font-heading font-semibold text-xs tracking-wider transition-all cursor-pointer hover:border-zinc-700"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 hover:text-black border border-neutral-200 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Load Offline Catalog
                 </button>
               </div>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="py-16 text-center bg-[#141414] border border-[#242424] rounded-3xl p-8 max-w-xl mx-auto">
-              <h3 className="font-heading font-bold text-lg text-white mb-2">
+            <div className="py-16 text-center bg-white border border-neutral-200 rounded-2xl p-8 max-w-xl mx-auto">
+              <h3 className="font-heading font-bold text-base sm:text-lg text-[#1A1A1A] mb-2">
                 No products found
               </h3>
-              <p className="text-xs text-zinc-400 mb-6 font-body">
+              <p className="text-xs text-neutral-500 mb-6 font-body">
                 {searchQuery
                   ? `No items matched "${searchQuery}".`
                   : 'No items in this category filter.'}
@@ -382,13 +378,13 @@ export default function App() {
                   setSearchQuery('');
                   setSelectedCategory('all');
                 }}
-                className="px-5 py-2 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs hover:bg-[#E5C158] transition cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
               >
                 View All Products
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {filteredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -404,7 +400,7 @@ export default function App() {
           )}
         </section>
 
-        {/* 6. COMBO BUILDER: 1 top + 1 bottom + 1 watch, live price + 10% discount */}
+        {/* 6. COMBO BUILDER */}
         <ComboBuilder
           products={products}
           onAddComboToCart={handleAddCustomComboToCart}
@@ -448,8 +444,8 @@ export default function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#141414] border border-[#D4AF37] text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-heading font-bold animate-bounce">
-          <Check className="w-4 h-4 text-[#D4AF37]" />
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#1A1A1A] border border-neutral-700 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-medium">
+          <Check className="w-3.5 h-3.5 text-[#4A5D45]" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -458,13 +454,12 @@ export default function App() {
       <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40">
         <button
           onClick={handleFloatingWhatsApp}
-          className="group relative flex items-center gap-2 px-3.5 sm:px-4 py-3 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-black font-heading font-extrabold text-xs sm:text-sm shadow-2xl shadow-[#25D366]/40 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-3 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs sm:text-sm font-semibold shadow-xl transition-all duration-200 cursor-pointer active:scale-95"
           aria-label="Order or Chat on WhatsApp"
         >
-          <MessageCircle className="w-5 h-5 fill-black stroke-black shrink-0" />
-          <span className="hidden sm:inline font-bold">Order on WhatsApp</span>
-          <span className="sm:hidden font-bold">WhatsApp</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-950 animate-ping absolute top-1 right-1" />
+          <MessageCircle className="w-4 h-4 text-white shrink-0" />
+          <span className="hidden sm:inline">WhatsApp Order</span>
+          <span className="sm:hidden">WhatsApp</span>
         </button>
       </div>
     </div>

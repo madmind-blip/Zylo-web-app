@@ -10,8 +10,8 @@ export const BRAND = {
   deliveryThreshold: 999, // Free delivery above ₹999
   standardShippingFee: 69,
   codFee: 0, // Free COD
-  instagramHandle: '@zyle',
-  instagramUrl: 'https://instagram.com/zyle',
+  instagramHandle: '@zyle.store_',
+  instagramUrl: 'https://instagram.com/zyle.store_',
 };
 
 export const FAQS: FAQItem[] = [
