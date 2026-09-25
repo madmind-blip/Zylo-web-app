@@ -19,11 +19,14 @@ import { PolicyModal, PolicyType } from './components/PolicyModal';
 import { PRODUCTS } from './data/products';
 import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
-import { MessageCircle, Sparkles, Flame, Check, ArrowUp } from 'lucide-react';
+import { MessageCircle, Check } from 'lucide-react';
 import { getWhatsAppNumberClean } from './utils/whatsapp';
 
 export default function App() {
-  // State
+  // Products loaded directly from the provided CSV product array
+  const [products] = useState<Product[]>(PRODUCTS);
+
+  // Navigation & Filter State
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('featured');
@@ -32,15 +35,8 @@ export default function App() {
   const [activePolicy, setActivePolicy] = useState<PolicyType>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Cart State (initialize with 1 popular combo for preview freshness)
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 'init-cart-1',
-      product: PRODUCTS[0], // Stealth Urban Streetwear Combo
-      selectedSize: 'L (Oversized)',
-      quantity: 1,
-    },
-  ]);
+  // Cart State (clean, empty by default)
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -50,8 +46,9 @@ export default function App() {
   };
 
   // Filter & Sort Logic
+  // Filter chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...products];
 
     // Search query filter
     if (searchQuery.trim()) {
@@ -61,21 +58,42 @@ export default function App() {
           p.name.toLowerCase().includes(q) ||
           (p.subtitle && p.subtitle.toLowerCase().includes(q)) ||
           p.description.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)
+          p.category.toLowerCase().includes(q) ||
+          p.tags.some((t) => t.toLowerCase().includes(q))
       );
     }
 
-    // Category Chip Filter
+    // Category / Tag Chip Filter: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500
     if (selectedCategory === 'combos') {
-      list = list.filter((p) => p.category === 'combos');
+      list = list.filter(
+        (p) =>
+          p.categoryGroup === 'combos' ||
+          p.category.toLowerCase().includes('combo')
+      );
     } else if (selectedCategory === 'watches') {
-      list = list.filter((p) => p.category === 'watches');
-    } else if (selectedCategory === 'under-499') {
-      list = list.filter((p) => p.price <= 499);
-    } else if (selectedCategory === 'under-999') {
-      list = list.filter((p) => p.price <= 999);
-    } else if (selectedCategory === 'new-arrivals') {
-      list = list.filter((p) => p.isNewArrival);
+      list = list.filter(
+        (p) =>
+          p.categoryGroup === 'watches' ||
+          p.category.toLowerCase().includes('watch')
+      );
+    } else if (selectedCategory === 'under-1500') {
+      list = list.filter(
+        (p) =>
+          p.price <= 1500 ||
+          p.tags.some((t) => t.toLowerCase().includes('1500') || t.toLowerCase().includes('1200'))
+      );
+    } else if (selectedCategory === 'under-2000') {
+      list = list.filter(
+        (p) =>
+          p.price <= 2000 ||
+          p.tags.some((t) => t.toLowerCase().includes('2000') || t.toLowerCase().includes('1500') || t.toLowerCase().includes('1200'))
+      );
+    } else if (selectedCategory === 'under-2500') {
+      list = list.filter(
+        (p) =>
+          p.price <= 2500 ||
+          p.tags.some((t) => t.toLowerCase().includes('2500') || t.toLowerCase().includes('2000'))
+      );
     }
 
     // Sorting
@@ -84,22 +102,18 @@ export default function App() {
     } else if (sortBy === 'price-high') {
       list.sort((a, b) => b.price - a.price);
     } else if (sortBy === 'discount') {
-      list.sort((a, b) => {
-        const discA = (a.originalPrice - a.price) / a.originalPrice;
-        const discB = (b.originalPrice - b.price) / b.originalPrice;
-        return discB - discA;
-      });
+      list.sort((a, b) => b.discountPercent - a.discountPercent);
     } else {
       // featured default
       list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
 
     return list;
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   // Cart operations
   const handleAddToCart = (product: Product, size?: string, quantity: number = 1) => {
-    const itemSize = size || (product.sizes?.[0] || 'Standard');
+    const itemSize = size || (product.sizes?.[0] || 'Free Size');
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
         (item) => item.product.id === product.id && item.selectedSize === itemSize && !item.isCustomCombo
@@ -130,22 +144,27 @@ export default function App() {
     watch: { product: Product },
     finalPrice: number
   ) => {
-    // Generate synthetic combo product representation
+    const originalPrice = Math.round(finalPrice / 0.9);
     const comboProduct: Product = {
       id: `custom-combo-${Date.now()}`,
-      name: `Custom 3-Piece Outfit (${top.product.name} + ${bottom.product.name} + ${watch.product.name})`,
-      category: 'combos',
+      name: `Custom Drip Set (${top.product.name} + ${bottom.product.name} + ${watch.product.name})`,
+      category: 'Combo Custom',
+      categoryGroup: 'combos',
       price: finalPrice,
-      originalPrice: Math.round(finalPrice / 0.9),
+      originalPrice,
+      discountPercent: 10,
       stock: 10,
-      images: [top.product.images[0], bottom.product.images[0], watch.product.images[0]],
-      description: 'Handcrafted custom 3-piece drip combo with 10% instant bundle discount.',
+      images: [top.product.images[0] || '', bottom.product.images[0] || '', watch.product.images[0] || ''],
+      sizes: ['Complete Set'],
+      isFreeSize: true,
+      description: 'Handcrafted custom drip combo with 10% instant bundle discount.',
       details: [
-        `Top: ${top.product.name} [Size: ${top.size}]`,
-        `Bottom: ${bottom.product.name} [Size: ${bottom.size}]`,
-        `Watch: ${watch.product.name}`,
+        `Piece 1: ${top.product.name} [${top.size}]`,
+        `Piece 2: ${bottom.product.name} [${bottom.size}]`,
+        `Piece 3: ${watch.product.name}`,
         '10% Instant Combo Discount applied',
       ],
+      tags: ['Combo', 'Custom', 'Bundle'],
     };
 
     setCartItems((prev) => [
@@ -164,7 +183,7 @@ export default function App() {
       },
     ]);
 
-    showToast('Custom 3-Piece Combo added to your bag!');
+    showToast('Custom Combo added to your bag!');
     setIsCartOpen(true);
   };
 
@@ -188,6 +207,13 @@ export default function App() {
   };
 
   const scrollToCombos = () => {
+    setSelectedCategory('combos');
+    const el = document.getElementById('products-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToWatches = () => {
+    setSelectedCategory('watches');
     const el = document.getElementById('products-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
@@ -223,9 +249,10 @@ export default function App() {
         <Hero
           onShopCombos={scrollToCombos}
           onExploreBuilder={scrollToBuilder}
+          featuredImageUrl={products[1]?.images?.[0]}
         />
 
-        {/* 3. Category Chips and Filter bar */}
+        {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
         <div id="products-section">
           <CategoryChips
             activeCategory={selectedCategory}
@@ -241,18 +268,20 @@ export default function App() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-[10px] sm:text-xs uppercase font-bold tracking-widest text-[#D4AF37] mb-1">
-                Pocket Price Luxury
+                Pocket Price Luxury • Kota Hub
               </div>
               <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-white">
                 {selectedCategory === 'combos'
-                  ? 'Ready Streetwear Combos'
+                  ? 'Clothing Combos'
                   : selectedCategory === 'watches'
-                  ? 'Luxury Wristwatches Under ₹500'
-                  : selectedCategory === 'under-499'
-                  ? 'Budget Steals Under ₹499'
-                  : selectedCategory === 'under-999'
-                  ? 'Combos & Fits Under ₹999'
-                  : 'Trending Kota Drops'}
+                  ? 'Luxury Watches Under Pocket Price'
+                  : selectedCategory === 'under-1500'
+                  ? 'Best Sellers Under ₹1500'
+                  : selectedCategory === 'under-2000'
+                  ? 'Best Sellers Under ₹2000'
+                  : selectedCategory === 'under-2500'
+                  ? 'Best Sellers Under ₹2500'
+                  : 'All Trending Drops'}
               </h2>
             </div>
 
@@ -267,21 +296,23 @@ export default function App() {
           </div>
 
           {filteredProducts.length === 0 ? (
-            <div className="py-16 text-center bg-[#141414] border border-[#242424] rounded-3xl p-8">
+            <div className="py-16 text-center bg-[#141414] border border-[#242424] rounded-3xl p-8 max-w-xl mx-auto">
               <h3 className="font-heading font-bold text-lg text-white mb-2">
-                No items matching "{searchQuery}"
+                No products found
               </h3>
-              <p className="text-xs text-zinc-400 mb-6">
-                Try searching for 'combo', 'gold watch', or 'tactical cargo'.
+              <p className="text-xs text-zinc-400 mb-6 font-body">
+                {searchQuery
+                  ? `No items matched "${searchQuery}".`
+                  : 'No items in this category filter.'}
               </p>
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCategory('all');
                 }}
-                className="px-6 py-2 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs"
+                className="px-5 py-2 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs hover:bg-[#E5C158] transition cursor-pointer"
               >
-                Reset Filters
+                View All Products
               </button>
             </div>
           ) : (
@@ -303,7 +334,7 @@ export default function App() {
 
         {/* 6. COMBO BUILDER: 1 top + 1 bottom + 1 watch, live price + 10% discount */}
         <ComboBuilder
-          products={PRODUCTS}
+          products={products}
           onAddComboToCart={handleAddCustomComboToCart}
         />
 

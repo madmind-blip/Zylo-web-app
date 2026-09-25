@@ -1,8 +1,9 @@
 import React from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, MessageCircle, Truck, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, MessageCircle, Truck } from 'lucide-react';
 import { CartItem } from '../types';
 import { BRAND } from '../data/content';
 import { createCartWhatsAppUrl } from '../utils/whatsapp';
+import { ProductImage } from './ProductImage';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -120,11 +121,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   key={item.id}
                   className="flex gap-3 bg-[#0A0A0A] p-3 rounded-2xl border border-[#242424] relative group"
                 >
-                  {/* Thumbnail */}
+                  {/* Thumbnail using ProductImage */}
                   <div className="w-20 h-24 rounded-xl overflow-hidden bg-zinc-900 shrink-0">
-                    <img
+                    <ProductImage
                       src={item.product.images[0]}
                       alt={item.product.name}
+                      productName={item.product.name}
+                      category={item.product.category}
                       className="w-full h-full object-cover"
                     />
                   </div>

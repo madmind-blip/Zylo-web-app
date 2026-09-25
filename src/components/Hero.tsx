@@ -5,21 +5,26 @@ import { BRAND } from '../data/content';
 interface HeroProps {
   onShopCombos: () => void;
   onExploreBuilder: () => void;
+  featuredImageUrl?: string;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder }) => {
+export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder, featuredImageUrl }) => {
   return (
     <section className="relative min-h-[580px] sm:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-[#242424]">
-      {/* Cinematic Dark Background with Gradient Overlays */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=1800&q=80"
-          alt="Zyle Streetwear and Watch Showcase"
-          className="w-full h-full object-cover object-center filter brightness-[0.32] contrast-125 scale-105 transform motion-safe:animate-pulse duration-[10000ms]"
-          loading="eager"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/70 to-[#0A0A0A]/40" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)]" />
+      {/* Cinematic Dark Background with Gold Ambient Mesh (No Stock Photos) */}
+      <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
+        {featuredImageUrl ? (
+          <img
+            src={featuredImageUrl}
+            alt="Zyle Showcase"
+            className="w-full h-full object-cover object-center filter brightness-[0.22] contrast-125 scale-105"
+            loading="eager"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(212,175,55,0.15),rgba(255,255,255,0))]" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-[#0A0A0A]/60" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_75%)]" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
@@ -43,7 +48,7 @@ export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder }) =>
           </span>
         </h1>
 
-        {/* Tagline */}
+        {/* Tagline: Syne, Premium look, pocket price */}
         <p className="font-heading font-bold text-xl sm:text-2xl md:text-3xl text-[#D4AF37] tracking-normal mb-4">
           {BRAND.tagline}
         </p>

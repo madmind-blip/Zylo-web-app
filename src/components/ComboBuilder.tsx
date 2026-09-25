@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Sparkles, MessageCircle, ShoppingBag, Check, ArrowRight, RefreshCw, Shirt, Watch, Flame, Layers } from 'lucide-react';
+import { Sparkles, MessageCircle, ShoppingBag, Check, Shirt, Watch } from 'lucide-react';
 import { Product } from '../types';
 import { createCustomComboWhatsAppUrl } from '../utils/whatsapp';
 import { BRAND } from '../data/content';
+import { ProductImage } from './ProductImage';
 
 interface ComboBuilderProps {
   products: Product[];
@@ -18,41 +19,47 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
   products,
   onAddComboToCart,
 }) => {
-  // Filter candidates
-  const tops = useMemo(
-    () => products.filter((p) => p.category === 'tops' || p.comboRole === 'top'),
-    [products]
-  );
-  const bottoms = useMemo(
-    () => products.filter((p) => p.category === 'bottoms' || p.comboRole === 'bottom'),
-    [products]
-  );
-  const watches = useMemo(
-    () => products.filter((p) => p.category === 'watches' || p.comboRole === 'watch'),
-    [products]
+  // Clothing Combos (e.g. Levi's shirts combo)
+  const clothingCombos = useMemo(() => {
+    const list = products.filter(
+      (p) =>
+        p.categoryGroup === 'combos' ||
+        p.category.toLowerCase().includes('combo') ||
+        p.comboRole === 'top'
+    );
+    return list.length > 0 ? list : products.slice(0, 1);
+  }, [products]);
+
+  // Luxury Watches
+  const luxuryWatches = useMemo(() => {
+    const list = products.filter(
+      (p) =>
+        p.categoryGroup === 'watches' ||
+        p.category.toLowerCase().includes('watch') ||
+        p.comboRole === 'watch'
+    );
+    return list.length > 0 ? list : products;
+  }, [products]);
+
+  // Selections
+  const [selectedClothingId, setSelectedClothingId] = useState<string>(clothingCombos[0]?.id || '');
+  const [selectedClothingSize, setSelectedClothingSize] = useState<string>(
+    clothingCombos[0]?.sizes?.[1] || clothingCombos[0]?.sizes?.[0] || 'L'
   );
 
-  // Default selections
-  const [selectedTopId, setSelectedTopId] = useState<string>(tops[0]?.id || '');
-  const [selectedTopSize, setSelectedTopSize] = useState<string>(tops[0]?.sizes?.[1] || 'L');
-
-  const [selectedBottomId, setSelectedBottomId] = useState<string>(bottoms[0]?.id || '');
-  const [selectedBottomSize, setSelectedBottomSize] = useState<string>(bottoms[0]?.sizes?.[1] || '32-34 (L)');
-
-  const [selectedWatchId, setSelectedWatchId] = useState<string>(watches[0]?.id || '');
+  const [selectedWatch1Id, setSelectedWatch1Id] = useState<string>(luxuryWatches[0]?.id || '');
+  const [selectedWatch2Id, setSelectedWatch2Id] = useState<string>(luxuryWatches[1]?.id || luxuryWatches[0]?.id || '');
   const [addedToast, setAddedToast] = useState(false);
 
-  // Active items
-  const selectedTop = tops.find((t) => t.id === selectedTopId) || tops[0];
-  const selectedBottom = bottoms.find((b) => b.id === selectedBottomId) || bottoms[0];
-  const selectedWatch = watches.find((w) => w.id === selectedWatchId) || watches[0];
+  const selectedClothing = clothingCombos.find((c) => c.id === selectedClothingId) || clothingCombos[0];
+  const selectedWatch1 = luxuryWatches.find((w) => w.id === selectedWatch1Id) || luxuryWatches[0];
+  const selectedWatch2 = luxuryWatches.find((w) => w.id === selectedWatch2Id) || luxuryWatches[1] || luxuryWatches[0];
 
-  // Pricing math
+  // Pricing math: 10% Combo discount
   const originalCombinedPrice = useMemo(() => {
-    return (selectedTop?.price || 0) + (selectedBottom?.price || 0) + (selectedWatch?.price || 0);
-  }, [selectedTop, selectedBottom, selectedWatch]);
+    return (selectedClothing?.price || 0) + (selectedWatch1?.price || 0) + (selectedWatch2?.price || 0);
+  }, [selectedClothing, selectedWatch1, selectedWatch2]);
 
-  // 10% Combo Discount
   const comboDiscount = useMemo(() => {
     return Math.round(originalCombinedPrice * 0.1);
   }, [originalCombinedPrice]);
@@ -61,11 +68,11 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
   const isFreeDelivery = finalComboPrice >= BRAND.deliveryThreshold;
 
   const handleOrderWhatsApp = () => {
-    if (!selectedTop || !selectedBottom || !selectedWatch) return;
+    if (!selectedClothing || !selectedWatch1 || !selectedWatch2) return;
     const url = createCustomComboWhatsAppUrl(
-      { product: selectedTop, size: selectedTopSize },
-      { product: selectedBottom, size: selectedBottomSize },
-      { product: selectedWatch },
+      { product: selectedClothing, size: selectedClothingSize },
+      { product: selectedWatch2, size: 'Free Size' },
+      { product: selectedWatch1 },
       originalCombinedPrice,
       comboDiscount,
       finalComboPrice
@@ -74,20 +81,22 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
   };
 
   const handleAddToCart = () => {
-    if (!selectedTop || !selectedBottom || !selectedWatch) return;
+    if (!selectedClothing || !selectedWatch1 || !selectedWatch2) return;
     onAddComboToCart(
-      { product: selectedTop, size: selectedTopSize },
-      { product: selectedBottom, size: selectedBottomSize },
-      { product: selectedWatch },
+      { product: selectedClothing, size: selectedClothingSize },
+      { product: selectedWatch2, size: 'Free Size' },
+      { product: selectedWatch1 },
       finalComboPrice
     );
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 2200);
   };
 
+  if (!products || products.length === 0) return null;
+
   return (
     <section id="combo-builder" className="py-16 sm:py-24 bg-[#0A0A0A] border-b border-[#242424] relative overflow-hidden">
-      {/* Background Glows */}
+      {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 -translate-y-1/2 w-80 h-80 bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -104,15 +113,15 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
           </h2>
 
           <p className="font-body text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
-            Curate your own signature drip. Pick <strong className="text-white">1 Top</strong> + <strong className="text-white">1 Bottom</strong> + <strong className="text-white">1 Watch</strong> and unlock an automatic <span className="text-[#D4AF37] font-bold">10% Instant Combo Discount</span>.
+            Curate your own signature look. Pick <strong className="text-white">1 Clothing Combo</strong> + <strong className="text-white">2 Luxury Watches</strong> and unlock an automatic <span className="text-[#D4AF37] font-bold">10% Instant Combo Discount</span>.
           </p>
         </div>
 
         {/* Builder Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: 3 Selection Steps */}
+          {/* Left Column: Selection Steps */}
           <div className="lg:col-span-7 space-y-6">
-            {/* STEP 1: PICK TOP */}
+            {/* STEP 1: PICK CLOTHING COMBO */}
             <div className="bg-[#141414] border border-[#242424] rounded-2xl p-4 sm:p-6 transition-all hover:border-[#D4AF37]/30">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
@@ -121,49 +130,49 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
                   </span>
                   <div>
                     <h3 className="font-heading font-bold text-base sm:text-lg text-white">
-                      Select Top Wear
+                      Select Clothing Set
                     </h3>
-                    <p className="text-[11px] text-zinc-400">Tees, Cuban Shirts, Waffle Knits</p>
+                    <p className="text-[11px] text-zinc-400">Combo packs with your selected fit</p>
                   </div>
                 </div>
                 <Shirt className="w-5 h-5 text-[#D4AF37]" />
               </div>
 
               {/* Items Grid */}
-              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-4">
-                {tops.map((top) => {
-                  const isSelected = selectedTop?.id === top.id;
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                {clothingCombos.map((item) => {
+                  const isSelected = selectedClothing?.id === item.id;
                   return (
                     <div
-                      key={top.id}
+                      key={item.id}
                       onClick={() => {
-                        setSelectedTopId(top.id);
-                        if (top.sizes && top.sizes.length > 0) {
-                          setSelectedTopSize(top.sizes[0]);
+                        setSelectedClothingId(item.id);
+                        if (item.sizes && item.sizes.length > 0) {
+                          setSelectedClothingSize(item.sizes[0]);
                         }
                       }}
-                      className={`relative rounded-xl p-2 bg-[#0A0A0A] border transition-all cursor-pointer flex flex-col justify-between ${
+                      className={`relative rounded-xl p-2.5 bg-[#0A0A0A] border transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
                           ? 'border-[#D4AF37] shadow-lg shadow-[#D4AF37]/15 bg-[#17150e]'
                           : 'border-[#242424] hover:border-zinc-600 opacity-75 hover:opacity-100'
                       }`}
                     >
-                      <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-zinc-900">
-                        <img
-                          src={top.images[0]}
-                          alt={top.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
+                      <div className="aspect-[4/3] rounded-lg overflow-hidden mb-2 bg-zinc-900">
+                        <ProductImage
+                          src={item.images[0]}
+                          alt={item.name}
+                          productName={item.name}
+                          category={item.category}
                         />
                       </div>
-                      <div className="text-[11px] font-heading font-bold text-white line-clamp-1 mb-1">
-                        {top.name}
+                      <div className="text-xs font-heading font-bold text-white line-clamp-1 mb-1">
+                        {item.name}
                       </div>
-                      <div className="text-[11px] font-heading font-bold text-[#D4AF37]">
-                        ₹{top.price}
+                      <div className="text-xs font-heading font-bold text-[#D4AF37]">
+                        ₹{item.price}
                       </div>
                       {isSelected && (
-                        <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
+                        <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -172,17 +181,17 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
                 })}
               </div>
 
-              {/* Size Selector for Top */}
-              {selectedTop?.sizes && (
+              {/* Size Selector for Clothing */}
+              {selectedClothing?.sizes && selectedClothing.sizes.length > 1 && (
                 <div className="flex items-center gap-2 pt-2 border-t border-[#242424]">
-                  <span className="text-xs text-zinc-400 font-medium">Top Size:</span>
+                  <span className="text-xs text-zinc-400 font-medium">Select Size:</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {selectedTop.sizes.map((s) => (
+                    {selectedClothing.sizes.map((s) => (
                       <button
                         key={s}
-                        onClick={() => setSelectedTopSize(s)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-heading font-semibold transition cursor-pointer ${
-                          selectedTopSize === s
+                        onClick={() => setSelectedClothingSize(s)}
+                        className={`px-3 py-1 rounded-lg text-xs font-heading font-semibold transition cursor-pointer ${
+                          selectedClothingSize === s
                             ? 'bg-[#D4AF37] text-black font-bold'
                             : 'bg-[#0A0A0A] text-zinc-300 border border-[#242424] hover:border-zinc-500'
                         }`}
@@ -195,7 +204,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
               )}
             </div>
 
-            {/* STEP 2: PICK BOTTOM */}
+            {/* STEP 2: PICK LUXURY WATCH 1 */}
             <div className="bg-[#141414] border border-[#242424] rounded-2xl p-4 sm:p-6 transition-all hover:border-[#D4AF37]/30">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
@@ -204,46 +213,41 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
                   </span>
                   <div>
                     <h3 className="font-heading font-bold text-base sm:text-lg text-white">
-                      Select Bottom Wear
+                      Select Primary Luxury Watch
                     </h3>
-                    <p className="text-[11px] text-zinc-400">Tactical Cargos, Tailored Chinos, Baggy Denims</p>
+                    <p className="text-[11px] text-zinc-400">Edifice Casio, Rolex, Tissot, Armani</p>
                   </div>
                 </div>
-                <Layers className="w-5 h-5 text-[#D4AF37]" />
+                <Watch className="w-5 h-5 text-[#D4AF37]" />
               </div>
 
-              {/* Items Grid */}
-              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-4">
-                {bottoms.map((bottom) => {
-                  const isSelected = selectedBottom?.id === bottom.id;
+              {/* Watches Grid */}
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-2 max-h-64 overflow-y-auto pr-1">
+                {luxuryWatches.slice(0, 6).map((watch) => {
+                  const isSelected = selectedWatch1?.id === watch.id;
                   return (
                     <div
-                      key={bottom.id}
-                      onClick={() => {
-                        setSelectedBottomId(bottom.id);
-                        if (bottom.sizes && bottom.sizes.length > 0) {
-                          setSelectedBottomSize(bottom.sizes[0]);
-                        }
-                      }}
+                      key={watch.id}
+                      onClick={() => setSelectedWatch1Id(watch.id)}
                       className={`relative rounded-xl p-2 bg-[#0A0A0A] border transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
                           ? 'border-[#D4AF37] shadow-lg shadow-[#D4AF37]/15 bg-[#17150e]'
                           : 'border-[#242424] hover:border-zinc-600 opacity-75 hover:opacity-100'
                       }`}
                     >
-                      <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-zinc-900">
-                        <img
-                          src={bottom.images[0]}
-                          alt={bottom.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
+                      <div className="aspect-square rounded-lg overflow-hidden mb-1.5 bg-zinc-900">
+                        <ProductImage
+                          src={watch.images[0]}
+                          alt={watch.name}
+                          productName={watch.name}
+                          category={watch.category}
                         />
                       </div>
-                      <div className="text-[11px] font-heading font-bold text-white line-clamp-1 mb-1">
-                        {bottom.name}
+                      <div className="text-[11px] font-heading font-bold text-white line-clamp-1 mb-0.5">
+                        {watch.name}
                       </div>
                       <div className="text-[11px] font-heading font-bold text-[#D4AF37]">
-                        ₹{bottom.price}
+                        ₹{watch.price}
                       </div>
                       {isSelected && (
                         <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
@@ -254,31 +258,9 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
                   );
                 })}
               </div>
-
-              {/* Size Selector for Bottom */}
-              {selectedBottom?.sizes && (
-                <div className="flex items-center gap-2 pt-2 border-t border-[#242424]">
-                  <span className="text-xs text-zinc-400 font-medium">Bottom Size:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedBottom.sizes.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setSelectedBottomSize(s)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-heading font-semibold transition cursor-pointer ${
-                          selectedBottomSize === s
-                            ? 'bg-[#D4AF37] text-black font-bold'
-                            : 'bg-[#0A0A0A] text-zinc-300 border border-[#242424] hover:border-zinc-500'
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* STEP 3: PICK WATCH */}
+            {/* STEP 3: PICK SECOND LUXURY WATCH / GIFT PIECE */}
             <div className="bg-[#141414] border border-[#242424] rounded-2xl p-4 sm:p-6 transition-all hover:border-[#D4AF37]/30">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
@@ -287,37 +269,37 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
                   </span>
                   <div>
                     <h3 className="font-heading font-bold text-base sm:text-lg text-white">
-                      Select Watch Piece
+                      Select Matching Watch / Second Piece
                     </h3>
-                    <p className="text-[11px] text-zinc-400">Sunburst Gold, Tactical Stealth, Roman Mesh</p>
+                    <p className="text-[11px] text-zinc-400">Tommy Hilfiger, Seiko, Fossil, Patek Philippe</p>
                   </div>
                 </div>
                 <Watch className="w-5 h-5 text-[#D4AF37]" />
               </div>
 
-              {/* Items Grid */}
-              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-2">
-                {watches.slice(0, 3).map((watch) => {
-                  const isSelected = selectedWatch?.id === watch.id;
+              {/* Watches Grid */}
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-2 max-h-64 overflow-y-auto pr-1">
+                {luxuryWatches.slice(6).map((watch) => {
+                  const isSelected = selectedWatch2?.id === watch.id;
                   return (
                     <div
                       key={watch.id}
-                      onClick={() => setSelectedWatchId(watch.id)}
+                      onClick={() => setSelectedWatch2Id(watch.id)}
                       className={`relative rounded-xl p-2 bg-[#0A0A0A] border transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
                           ? 'border-[#D4AF37] shadow-lg shadow-[#D4AF37]/15 bg-[#17150e]'
                           : 'border-[#242424] hover:border-zinc-600 opacity-75 hover:opacity-100'
                       }`}
                     >
-                      <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-zinc-900">
-                        <img
+                      <div className="aspect-square rounded-lg overflow-hidden mb-1.5 bg-zinc-900">
+                        <ProductImage
                           src={watch.images[0]}
                           alt={watch.name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
+                          productName={watch.name}
+                          category={watch.category}
                         />
                       </div>
-                      <div className="text-[11px] font-heading font-bold text-white line-clamp-1 mb-1">
+                      <div className="text-[11px] font-heading font-bold text-white line-clamp-1 mb-0.5">
                         {watch.name}
                       </div>
                       <div className="text-[11px] font-heading font-bold text-[#D4AF37]">
@@ -337,15 +319,15 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
 
           {/* Right Column: Live Outfit Board & Pricing Summary */}
           <div className="lg:col-span-5 sticky top-28 space-y-4">
-            <div className="bg-[#141414] border-2 border-[#D4AF37]/60 rounded-3xl p-5 sm:p-7 shadow-2xl relative overflow-hidden gold-glow-subtle">
+            <div className="bg-[#141414] border-2 border-[#D4AF37]/60 rounded-3xl p-5 sm:p-7 shadow-2xl relative overflow-hidden">
               {/* Top Banner */}
               <div className="flex items-center justify-between pb-4 border-b border-[#242424] mb-5">
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37]">
-                    Outfit Preview
+                    Live Outfit Bundle
                   </span>
                   <h4 className="font-heading font-bold text-lg text-white">
-                    Your 3-Piece Drip Set
+                    Your Curated Set
                   </h4>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-[#D4AF37] text-black font-heading font-extrabold text-xs">
@@ -355,52 +337,57 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({
 
               {/* 3 Pieces Visual Stack */}
               <div className="grid grid-cols-3 gap-2.5 mb-6">
-                {/* Chosen Top */}
+                {/* Chosen Clothing */}
                 <div className="flex flex-col items-center bg-[#0A0A0A] p-2 rounded-xl border border-[#242424]">
                   <div className="w-full aspect-[4/5] rounded-lg overflow-hidden mb-1.5">
-                    <img
-                      src={selectedTop?.images[0]}
-                      alt="Selected Top"
-                      className="w-full h-full object-cover"
+                    <ProductImage
+                      src={selectedClothing?.images[0]}
+                      alt="Clothing"
+                      productName={selectedClothing?.name || 'Clothing'}
+                      category={selectedClothing?.category}
                     />
                   </div>
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase">Top ({selectedTopSize})</span>
-                  <span className="text-xs font-heading font-semibold text-white truncate max-w-full text-center">
-                    {selectedTop?.name}
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase truncate max-w-full">
+                    {selectedClothingSize}
                   </span>
-                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedTop?.price}</span>
+                  <span className="text-xs font-heading font-semibold text-white truncate max-w-full text-center">
+                    {selectedClothing?.name}
+                  </span>
+                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedClothing?.price}</span>
                 </div>
 
-                {/* Chosen Bottom */}
+                {/* Chosen Watch 1 */}
                 <div className="flex flex-col items-center bg-[#0A0A0A] p-2 rounded-xl border border-[#242424]">
                   <div className="w-full aspect-[4/5] rounded-lg overflow-hidden mb-1.5">
-                    <img
-                      src={selectedBottom?.images[0]}
-                      alt="Selected Bottom"
-                      className="w-full h-full object-cover"
+                    <ProductImage
+                      src={selectedWatch1?.images[0]}
+                      alt="Watch 1"
+                      productName={selectedWatch1?.name || 'Watch 1'}
+                      category="watches"
                     />
                   </div>
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase">Bottom ({selectedBottomSize})</span>
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase">Watch 1</span>
                   <span className="text-xs font-heading font-semibold text-white truncate max-w-full text-center">
-                    {selectedBottom?.name}
+                    {selectedWatch1?.name}
                   </span>
-                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedBottom?.price}</span>
+                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedWatch1?.price}</span>
                 </div>
 
-                {/* Chosen Watch */}
+                {/* Chosen Watch 2 */}
                 <div className="flex flex-col items-center bg-[#0A0A0A] p-2 rounded-xl border border-[#242424]">
                   <div className="w-full aspect-[4/5] rounded-lg overflow-hidden mb-1.5">
-                    <img
-                      src={selectedWatch?.images[0]}
-                      alt="Selected Watch"
-                      className="w-full h-full object-cover"
+                    <ProductImage
+                      src={selectedWatch2?.images[0]}
+                      alt="Watch 2"
+                      productName={selectedWatch2?.name || 'Watch 2'}
+                      category="watches"
                     />
                   </div>
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase">Watch</span>
+                  <span className="text-[10px] text-zinc-400 font-bold uppercase">Watch 2</span>
                   <span className="text-xs font-heading font-semibold text-white truncate max-w-full text-center">
-                    {selectedWatch?.name}
+                    {selectedWatch2?.name}
                   </span>
-                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedWatch?.price}</span>
+                  <span className="text-[11px] text-[#D4AF37] font-bold">₹{selectedWatch2?.price}</span>
                 </div>
               </div>
 

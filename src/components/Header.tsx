@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, X, MessageCircle, Sparkles } from 'lucide-react';
-import { BRAND } from '../data/content';
+import { ShoppingBag, Search, X, MessageCircle, Sparkles, FileSpreadsheet } from 'lucide-react';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 
 interface HeaderProps {
@@ -8,7 +7,7 @@ interface HeaderProps {
   onOpenCart: () => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
-  onNavigateSection?: (sectionId: string) => void;
+  onOpenSheetModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCart,
   searchQuery,
   onSearchChange,
+  onOpenSheetModal,
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -126,6 +126,18 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
           </div>
+
+          {/* Google Sheet Sync Button */}
+          {onOpenSheetModal && (
+            <button
+              onClick={onOpenSheetModal}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#141414] border border-[#242424] hover:border-[#D4AF37]/60 text-zinc-300 hover:text-[#D4AF37] transition-all cursor-pointer"
+              aria-label="Google Sheet CSV Sync"
+              title="Sync Products with Google Sheet CSV"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+            </button>
+          )}
 
           {/* Quick WhatsApp Support */}
           <button

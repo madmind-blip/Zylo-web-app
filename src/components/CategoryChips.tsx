@@ -1,7 +1,7 @@
 import React from 'react';
-import { Sparkles, SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 
-export type CategoryFilter = 'all' | 'combos' | 'watches' | 'under-499' | 'under-999' | 'new-arrivals';
+export type CategoryFilter = 'all' | 'combos' | 'watches' | 'under-1500' | 'under-2000' | 'under-2500';
 
 interface CategoryChipsProps {
   activeCategory: CategoryFilter;
@@ -19,19 +19,19 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
   totalCount,
 }) => {
   const chips: { id: CategoryFilter; label: string; badge?: string }[] = [
-    { id: 'all', label: 'All Items' },
-    { id: 'combos', label: 'Combos', badge: 'Popular' },
+    { id: 'all', label: 'All' },
+    { id: 'combos', label: 'Combos', badge: 'Combo Sets' },
     { id: 'watches', label: 'Watches', badge: 'Hot' },
-    { id: 'under-499', label: 'Under ₹499' },
-    { id: 'under-999', label: 'Under ₹999' },
-    { id: 'new-arrivals', label: 'New Arrivals' },
+    { id: 'under-1500', label: 'Under ₹1500' },
+    { id: 'under-2000', label: 'Under ₹2000' },
+    { id: 'under-2500', label: 'Under ₹2500' },
   ];
 
   return (
     <div className="py-4 border-b border-[#242424] bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Scrollable Chips */}
+          {/* Scrollable Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
             {chips.map((chip) => {
               const isActive = activeCategory === chip.id;

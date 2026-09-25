@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, MapPin, Check } from 'lucide-react';
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
-import { BRAND } from '../data/content';
+import { ProductImage } from './ProductImage';
 
 interface ProductModalProps {
   product: Product | null;
@@ -17,7 +17,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
   if (!product) return null;
 
-  const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Standard';
+  const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size';
   const [selectedSize, setSelectedSize] = useState<string>(defaultSize);
   const [quantity, setQuantity] = useState<number>(1);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
@@ -27,7 +27,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     if (product.sizes && product.sizes.length > 0) {
       setSelectedSize(product.sizes[0]);
     } else {
-      setSelectedSize('Standard');
+      setSelectedSize('Free Size');
     }
     setQuantity(1);
     setActiveImageIndex(0);
@@ -45,9 +45,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const isSoldOut = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
-  const discountPercent = Math.round(
-    ((product.originalPrice - product.price) / product.originalPrice) * 100
-  );
+  const showSizeSelector = !product.isFreeSize && product.sizes && product.sizes.length > 1;
 
   const handleOrderOnWhatsApp = () => {
     const url = createProductWhatsAppUrl(product, selectedSize, quantity);
@@ -62,12 +60,14 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     }, 2000);
   };
 
+  const imageList = product.images.length > 0 ? product.images : [''];
+
   const prevImage = () => {
-    setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+    setActiveImageIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1));
   };
 
   const nextImage = () => {
-    setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    setActiveImageIndex((prev) => (prev === imageList.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -86,29 +86,38 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Left Side: Swipeable / Clickable Image Gallery */}
+        {/* Left Side: Image Gallery */}
         <div className="w-full md:w-1/2 flex flex-col bg-[#0A0A0A] p-4 sm:p-6 justify-between">
           <div className="relative aspect-[4/5] sm:aspect-square w-full rounded-2xl overflow-hidden bg-zinc-950 border border-[#242424]">
-            <img
-              src={product.images[activeImageIndex]}
+            <ProductImage
+              src={imageList[activeImageIndex]}
               alt={`${product.name} - view ${activeImageIndex + 1}`}
+              productName={product.name}
+              category={product.category}
+              isSoldOut={isSoldOut}
               className="w-full h-full object-cover object-center transition-all duration-300"
             />
 
             {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-              <span className="px-2.5 py-1 rounded-full bg-[#D4AF37] text-black font-heading font-extrabold text-xs">
-                {discountPercent}% OFF
-              </span>
-              {isLowStock && (
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
+              {product.discountPercent > 0 && (
+                <span className="px-2.5 py-1 rounded-full bg-[#D4AF37] text-black font-heading font-extrabold text-xs shadow-md">
+                  {product.discountPercent}% OFF
+                </span>
+              )}
+              {isSoldOut ? (
+                <span className="px-2.5 py-1 rounded-full bg-red-950/90 border border-red-700 text-red-300 font-heading font-bold text-xs uppercase tracking-wider">
+                  Sold Out
+                </span>
+              ) : isLowStock ? (
                 <span className="px-2.5 py-1 rounded-full bg-amber-950/90 border border-amber-600/80 text-amber-300 font-heading font-bold text-xs">
                   🔥 Only {product.stock} left in Kota!
                 </span>
-              )}
+              ) : null}
             </div>
 
             {/* Image Nav Arrows (if more than 1 image) */}
-            {product.images.length > 1 && (
+            {imageList.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
@@ -128,10 +137,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             )}
           </div>
 
-          {/* Thumbnails */}
-          {product.images.length > 1 && (
+          {/* Thumbnails (only if multiple images) */}
+          {imageList.length > 1 && (
             <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
-              {product.images.map((img, idx) => (
+              {imageList.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
@@ -139,7 +148,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     activeImageIndex === idx ? 'border-[#D4AF37] scale-105' : 'border-[#242424] opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={img} alt="thumb" className="w-full h-full object-cover" />
+                  <ProductImage
+                    src={img}
+                    alt="thumb"
+                    productName={product.name}
+                    category={product.category}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -151,7 +166,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <div>
             {/* Tagline / Category */}
             <div className="flex items-center gap-2 text-xs font-semibold text-[#D4AF37] uppercase tracking-wider mb-1.5">
-              <span>{product.category}</span>
+              <span>{product.categoryGroup === 'combos' ? 'Combos' : product.categoryGroup === 'watches' ? 'Watches' : product.category}</span>
               <span>•</span>
               <span className="flex items-center gap-1 text-zinc-400">
                 <MapPin className="w-3 h-3 text-[#D4AF37]" />
@@ -160,9 +175,23 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             </div>
 
             {/* Title */}
-            <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-white mb-2 leading-tight">
+            <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-white mb-1.5 leading-tight">
               {product.name}
             </h2>
+
+            {/* Tag Badges */}
+            {product.tags && product.tags.length > 0 && (
+              <div className="mb-2.5 flex flex-wrap gap-1.5">
+                {product.tags.map((t, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-heading font-semibold"
+                  >
+                    ★ {t}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {product.subtitle && (
               <p className="text-xs sm:text-sm text-zinc-400 mb-3">{product.subtitle}</p>
@@ -173,20 +202,24 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <span className="font-heading font-extrabold text-2xl sm:text-3xl text-[#D4AF37]">
                 ₹{product.price}
               </span>
-              <span className="font-heading text-base text-zinc-500 line-through">
-                ₹{product.originalPrice}
-              </span>
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full ml-auto">
-                Save ₹{product.originalPrice - product.price}
-              </span>
+              {product.originalPrice > product.price && (
+                <span className="font-heading text-base text-zinc-500 line-through">
+                  ₹{product.originalPrice}
+                </span>
+              )}
+              {product.originalPrice > product.price && (
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full ml-auto">
+                  Save ₹{product.originalPrice - product.price}
+                </span>
+              )}
             </div>
 
-            {/* Size Selector */}
-            {product.sizes && product.sizes.length > 0 && (
+            {/* Size Selector: "Free size" means a single option, no size selector needed */}
+            {showSizeSelector ? (
               <div className="mb-5">
                 <div className="flex items-center justify-between text-xs mb-2">
                   <span className="font-heading font-bold text-zinc-300">
-                    {product.category === 'watches' ? 'Strap Style / Fit:' : 'Select Size:'}
+                    Select Size:
                   </span>
                   <span className="text-[#D4AF37] font-semibold">{selectedSize}</span>
                 </div>
@@ -205,6 +238,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     </button>
                   ))}
                 </div>
+              </div>
+            ) : (
+              <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0A0A0A] border border-[#242424] text-xs text-zinc-300">
+                <span className="text-zinc-500">Size:</span>
+                <span className="text-[#D4AF37] font-bold">
+                  {product.sizes?.[0] || 'Free Size (Standard)'}
+                </span>
               </div>
             )}
 
@@ -239,19 +279,21 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {/* Description */}
             <div className="mb-5">
               <h4 className="text-xs font-heading font-bold text-zinc-300 uppercase tracking-wider mb-1.5">
-                About this piece
+                Product Description
               </h4>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-body mb-3">
                 {product.description}
               </p>
-              <ul className="space-y-1">
-                {product.details.map((detail, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
-                    <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                    <span>{detail}</span>
-                  </li>
-                ))}
-              </ul>
+              {product.details && product.details.length > 0 && (
+                <ul className="space-y-1">
+                  {product.details.map((detail, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
+                      <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
