@@ -283,6 +283,7 @@ export default function App() {
           onShopCombos={scrollToCombos}
           onExploreBuilder={scrollToBuilder}
           featuredImageUrl={products[1]?.images?.[0] || 'https://i.ibb.co/zK5ZGtF/IMG-20260924-171902-630.jpg'}
+          isIntroActive={showIntro}
         />
 
         {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}

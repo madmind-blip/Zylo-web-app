@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles, ShieldCheck, Truck, MapPin } from 'lucide-react';
 import { BRAND } from '../data/content';
 
@@ -6,9 +6,26 @@ interface HeroProps {
   onShopCombos: () => void;
   onExploreBuilder: () => void;
   featuredImageUrl?: string;
+  isIntroActive?: boolean;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder, featuredImageUrl }) => {
+export const Hero: React.FC<HeroProps> = ({
+  onShopCombos,
+  onExploreBuilder,
+  featuredImageUrl,
+  isIntroActive = false,
+}) => {
+  const [hasTriggered, setHasTriggered] = useState(!isIntroActive);
+
+  useEffect(() => {
+    if (!isIntroActive) {
+      const timer = setTimeout(() => {
+        setHasTriggered(true);
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isIntroActive]);
+
   return (
     <section className="relative min-h-[580px] sm:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-[#242424]">
       {/* Cinematic Dark Background with Gold Ambient Mesh (No Stock Photos) */}
@@ -40,10 +57,32 @@ export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder, feat
           <span className="text-[#D4AF37] font-semibold">COD Available</span>
         </div>
 
-        {/* Big Syne Headline with Flowing Aurora Gold Gradient */}
+        {/* Big Syne Headline with Apple-Style Text Reveal Animation */}
         <h1 className="font-heading font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight uppercase leading-[1.05] sm:leading-[1] mb-4">
-          <span className="aurora-gold-text">
-            UPGRADE YOUR <br className="hidden sm:inline" /> DRIP GAME
+          <span
+            className={`inline-block text-white ${hasTriggered ? 'animate-apple-reveal' : 'opacity-0'}`}
+            style={{ animationDelay: '0ms' }}
+          >
+            UPGRADE
+          </span>{' '}
+          <span
+            className={`inline-block text-white ${hasTriggered ? 'animate-apple-reveal' : 'opacity-0'}`}
+            style={{ animationDelay: '180ms' }}
+          >
+            YOUR
+          </span>{' '}
+          <br className="hidden sm:inline" />
+          <span
+            className={`inline-block text-[#D4AF37] ${hasTriggered ? 'animate-apple-reveal' : 'opacity-0'}`}
+            style={{ animationDelay: '360ms' }}
+          >
+            DRIP
+          </span>{' '}
+          <span
+            className={`inline-block text-[#D4AF37] ${hasTriggered ? 'animate-apple-reveal' : 'opacity-0'}`}
+            style={{ animationDelay: '540ms' }}
+          >
+            GAME
           </span>
         </h1>
 
