@@ -1,5 +1,8 @@
 import { Product } from '../types';
 
+export const PUBLISHED_SHEET_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRUvTHvotcGd7Cnsig2E79kBrFdABqbGiiIsgFbzMcCMfcbGQy29LOhz5l-mOU-8y_4MdKKlS57ituC/pub?output=csv';
+
 /**
  * Extracts Google Drive file ID from various common Google Drive URL patterns:
  * - https://drive.google.com/file/d/FILE_ID/view?usp=sharing
@@ -272,10 +275,15 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
     }
 
     // 6. Image rule:
-    // "IMAGE holds a single Google Drive file link like . Convert it to https://drive.google.com/uc?export=view&id=FILE_ID before displaying.
-    // If it fails to load, show a neutral dark placeholder with the product name, never a broken image icon."
+    // IMAGE holds direct link (e.g. i.ibb.co) or Google Drive link
     const rawImage = row['image'] || '';
-    const formattedImage = formatGoogleDriveUrl(rawImage);
+    let formattedImage = rawImage.trim();
+    if (
+      formattedImage.includes('drive.google.com') ||
+      (!formattedImage.startsWith('http') && formattedImage.length >= 20)
+    ) {
+      formattedImage = formatGoogleDriveUrl(formattedImage);
+    }
     const images = formattedImage ? [formattedImage] : [];
 
     // 7. Description & Tags & Details
@@ -291,17 +299,27 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
           .filter(Boolean)
       : [];
 
-    const details: string[] = [];
-    if (categoryGroup === 'watches') {
-      details.push('High-precision quartz mechanism');
-      details.push('Scratch-resistant mineral crystal glass');
-      details.push('Adjustable comfortable strap');
-      details.push('Ships from Kota with premium gift box');
-    } else {
-      details.push('Premium breathable heavyweight fabric');
-      details.push('Pre-shrunk anti-fade color treatment');
-      details.push('Modern streetwear relaxed drape');
-      details.push('Fast express dispatch from Kota, Rajasthan');
+    let details: string[] = [];
+    if (row['details']) {
+      details = row['details']
+        .split(/[\n;]+/)
+        .map((d) => d.trim())
+        .filter(Boolean);
+    }
+    if (details.length === 0) {
+      if (categoryGroup === 'watches') {
+        details.push('High-precision quartz mechanism & exhibition design');
+        details.push('Scratch-resistant mineral crystal glass & solid steel bezel');
+        details.push('Adjustable comfortable strap (Free Size)');
+        details.push('Ships from Kota with premium protective gift box');
+        details.push('Cash on Delivery available across India');
+      } else {
+        details.push('Set of premium breathable cotton clothing items');
+        details.push('Pre-shrunk anti-fade color treatment');
+        details.push('Modern streetwear relaxed drape');
+        details.push('Fast express dispatch from Kota, Rajasthan');
+        details.push('Cash on Delivery available with fast doorstep receipt');
+      }
     }
 
     // 8. Combo role for Combo Builder
@@ -340,8 +358,12 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
     products.push({
       id,
       name,
-      subtitle: row['subtitle'] || tags.slice(0, 2).join(' • ') || undefined,
-      category: normalizedCategory,
+      subtitle:
+        row['subtitle'] ||
+        (rawCategory.trim().toLowerCase() !== name.toLowerCase() ? rawCategory.trim() : undefined) ||
+        tags.slice(0, 2).join(' • ') ||
+        undefined,
+      category: rawCategory.trim() || normalizedCategory,
       categoryGroup,
       price: sellingPrice,
       originalPrice: cutOffPrice,
@@ -365,7 +387,9 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
 /**
  * Fetches and parses a published Google Sheet CSV URL.
  */
-export async function fetchProductsFromSheetUrl(url: string): Promise<Product[]> {
+export async function fetchProductsFromSheetUrl(
+  url: string = PUBLISHED_SHEET_CSV_URL
+): Promise<Product[]> {
   const normalizedUrl = normalizeGoogleSheetCsvUrl(url);
   if (!normalizedUrl) {
     throw new Error('Please provide a valid Google Sheet CSV URL.');

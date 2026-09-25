@@ -3,31 +3,61 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { OfferStrip } from './components/OfferStrip';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { CategoryChips, CategoryFilter } from './components/CategoryChips';
 import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
+import { ProductSkeletonGrid } from './components/ProductSkeleton';
 import { ComboBuilder } from './components/ComboBuilder';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { PolicyModal, PolicyType } from './components/PolicyModal';
 import { CinematicIntro } from './components/CinematicIntro';
+import { SheetSettingsModal } from './components/SheetSettingsModal';
 import { PRODUCTS } from './data/products';
 import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
-import { MessageCircle, Check } from 'lucide-react';
+import { MessageCircle, Check, AlertCircle, RefreshCw } from 'lucide-react';
 import { getWhatsAppNumberClean } from './utils/whatsapp';
+import { fetchProductsFromSheetUrl, PUBLISHED_SHEET_CSV_URL } from './utils/csvParser';
 
 export default function App() {
   // First-visit cinematic entry screen (React state only, not localStorage)
   const [showIntro, setShowIntro] = useState<boolean>(true);
 
-  // Products loaded directly from the provided CSV product array
-  const [products] = useState<Product[]>(PRODUCTS);
+  // Products loaded dynamically from the published Google Sheet CSV
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [activeSheetUrl, setActiveSheetUrl] = useState<string>(PUBLISHED_SHEET_CSV_URL);
+  const [isSheetModalOpen, setIsSheetModalOpen] = useState<boolean>(false);
+
+  // Live fetch function
+  const loadProducts = useCallback(async (targetUrl: string = activeSheetUrl) => {
+    setIsLoading(true);
+    setFetchError(null);
+    try {
+      const fetched = await fetchProductsFromSheetUrl(targetUrl);
+      setProducts(fetched);
+    } catch (err: any) {
+      console.error('Failed to load products from Google Sheet:', err);
+      setFetchError(
+        err.message ||
+          'Unable to load live catalog from Google Sheets. Please check your internet connection or sheet permissions.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeSheetUrl]);
+
+  // Load products on mount
+  useEffect(() => {
+    loadProducts(PUBLISHED_SHEET_CSV_URL);
+  }, []);
 
   // Navigation & Filter State
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
@@ -248,6 +278,7 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onOpenSheetModal={() => setIsSheetModalOpen(true)}
       />
 
       <main>
@@ -255,7 +286,7 @@ export default function App() {
         <Hero
           onShopCombos={scrollToCombos}
           onExploreBuilder={scrollToBuilder}
-          featuredImageUrl={products[1]?.images?.[0]}
+          featuredImageUrl={products[1]?.images?.[0] || 'https://i.ibb.co/zK5ZGtF/IMG-20260924-171902-630.jpg'}
         />
 
         {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
@@ -265,7 +296,7 @@ export default function App() {
             onSelectCategory={setSelectedCategory}
             sortBy={sortBy}
             onSortChange={setSortBy}
-            totalCount={filteredProducts.length}
+            totalCount={isLoading ? 0 : filteredProducts.length}
           />
         </div>
 
@@ -301,7 +332,47 @@ export default function App() {
             )}
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-xs text-[#D4AF37] font-body tracking-wider uppercase mb-2">
+                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+                Loading live catalog from Google Sheets...
+              </div>
+              <ProductSkeletonGrid count={8} />
+            </div>
+          ) : fetchError ? (
+            <div className="py-14 px-6 max-w-lg mx-auto text-center bg-[#141414] border border-amber-500/30 rounded-3xl shadow-2xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-[#D4AF37] shadow-inner">
+                <AlertCircle className="w-7 h-7" />
+              </div>
+              <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white mb-2">
+                Unable to Load Live Catalog
+              </h3>
+              <p className="font-body text-xs sm:text-sm text-zinc-400 mb-6 max-w-md mx-auto leading-relaxed">
+                {fetchError}
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={() => loadProducts(activeSheetUrl)}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#D4AF37] text-black font-heading font-bold text-xs uppercase tracking-wider hover:bg-[#E5C158] transition-all cursor-pointer shadow-lg shadow-[#D4AF37]/20"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Try Again
+                </button>
+                <button
+                  onClick={() => {
+                    setProducts(PRODUCTS);
+                    setFetchError(null);
+                    showToast('Loaded offline catalog');
+                  }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#1c1c1c] text-zinc-300 hover:text-white border border-[#2e2e2e] font-heading font-semibold text-xs tracking-wider transition-all cursor-pointer hover:border-zinc-700"
+                >
+                  Load Offline Catalog
+                </button>
+              </div>
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="py-16 text-center bg-[#141414] border border-[#242424] rounded-3xl p-8 max-w-xl mx-auto">
               <h3 className="font-heading font-bold text-lg text-white mb-2">
                 No products found
@@ -378,6 +449,28 @@ export default function App() {
       <PolicyModal
         type={activePolicy}
         onClose={() => setActivePolicy(null)}
+      />
+
+      {/* Google Sheet Sync Modal */}
+      <SheetSettingsModal
+        isOpen={isSheetModalOpen}
+        onClose={() => setIsSheetModalOpen(false)}
+        currentUrl={activeSheetUrl}
+        onSaveUrl={async (newUrl) => {
+          setActiveSheetUrl(newUrl);
+          await loadProducts(newUrl);
+          showToast('Synced with Google Sheet!');
+        }}
+        onLoadCustomProducts={(custom) => {
+          setProducts(custom);
+          showToast(`Loaded ${custom.length} products`);
+        }}
+        onResetDefault={() => {
+          setActiveSheetUrl(PUBLISHED_SHEET_CSV_URL);
+          loadProducts(PUBLISHED_SHEET_CSV_URL);
+          showToast('Reset to default sheet');
+        }}
+        isLoading={isLoading}
       />
 
       {/* Toast Notification */}
