@@ -35,18 +35,6 @@ export interface CartItem {
   };
 }
 
-export interface Review {
-  id: string;
-  name: string;
-  city: string;
-  rating: number;
-  date: string;
-  productBought: string;
-  comment: string;
-  verified: boolean;
-  tag: string;
-}
-
 export interface FAQItem {
   question: string;
   answer: string;

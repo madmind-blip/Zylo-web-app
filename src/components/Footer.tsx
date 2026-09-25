@@ -108,11 +108,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
                 </a>
               </li>
               <li>
-                <a href="#reviews-section" className="hover:text-[#D4AF37] transition-colors">
-                  Customer Reviews & Ratings
-                </a>
-              </li>
-              <li>
                 <a href="#faq-section" className="hover:text-[#D4AF37] transition-colors">
                   Ordering & Delivery FAQ
                 </a>

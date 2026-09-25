@@ -1,4 +1,4 @@
-import { Review, FAQItem } from '../types';
+import { FAQItem } from '../types';
 
 export const BRAND = {
   name: 'Zyle',
@@ -13,75 +13,6 @@ export const BRAND = {
   instagramHandle: '@zyle',
   instagramUrl: 'https://instagram.com/zyle',
 };
-
-export const REVIEWS: Review[] = [
-  {
-    id: 'rev-1',
-    name: 'Aryan Sharma',
-    city: 'Kota, Rajasthan',
-    rating: 5,
-    date: '3 days ago',
-    productBought: 'Stealth Urban Streetwear Combo',
-    comment: 'Bhai the quality is unbelievable for this price! 240 GSM heavy tee hangs like high-end Zara/H&M studio drop. Got it delivered in Kota within 24 hours. Ordered on WhatsApp directly, super smooth.',
-    verified: true,
-    tag: 'Verified Kota Buyer'
-  },
-  {
-    id: 'rev-2',
-    name: 'Rishabh Meena',
-    city: 'Jaipur, Rajasthan',
-    rating: 5,
-    date: '1 week ago',
-    productBought: 'Zyle Royal Sunburst Gold Watch',
-    comment: 'The watch looks like easily a 15,000 to 20,000 rupee luxury watch on my wrist! Sunburst dial shines brilliantly under sunlight. Even the weight feels premium, not cheap plastic.',
-    verified: true,
-    tag: 'Verified Buyer'
-  },
-  {
-    id: 'rev-3',
-    name: 'Divyansh Verma',
-    city: 'Kota (Vigyan Nagar)',
-    rating: 5,
-    date: '1 week ago',
-    productBought: 'Old Money Linen Resort Combo',
-    comment: 'Wore the waffle shirt on my birthday and literally 6 people asked where I got it from. The pocket price tagline is 100% genuine. Pocket-friendly + premium drip.',
-    verified: true,
-    tag: 'Verified Kota Local'
-  },
-  {
-    id: 'rev-4',
-    name: 'Harshil Patidar',
-    city: 'Indore, MP',
-    rating: 5,
-    date: '2 weeks ago',
-    productBought: 'Stealth Tactical Chrono Watch',
-    comment: 'Tactical chrono is heavy and matte black finish is dope! Matte strap is sweatproof for gym. COD reached in 3 days with safe bubble packing.',
-    verified: true,
-    tag: 'Verified Buyer'
-  },
-  {
-    id: 'rev-5',
-    name: 'Rohan Choudhary',
-    city: 'Jodhpur, Rajasthan',
-    rating: 5,
-    date: '3 weeks ago',
-    productBought: 'Custom Combo Builder (3 Pieces)',
-    comment: 'Used their Combo Builder tool to pick an oversized tee + black cargo + emerald watch. Saved an extra 10% combo discount! WhatsApp order was confirmed in 5 minutes.',
-    verified: true,
-    tag: 'Combo Builder Buyer'
-  },
-  {
-    id: 'rev-6',
-    name: 'Amit Singhal',
-    city: 'Delhi NCR',
-    rating: 5,
-    date: '1 month ago',
-    productBought: 'Emerald Roman Imperial Mesh Watch',
-    comment: 'The magnetic gold mesh strap snaps effortlessly. That deep bottle green dial is so captivating. Outstanding value under ₹500.',
-    verified: true,
-    tag: 'Verified Buyer'
-  }
-];
 
 export const FAQS: FAQItem[] = [
   {

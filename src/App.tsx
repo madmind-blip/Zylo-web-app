@@ -11,7 +11,6 @@ import { CategoryChips, CategoryFilter } from './components/CategoryChips';
 import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { ComboBuilder } from './components/ComboBuilder';
-import { ReviewsSection } from './components/ReviewsSection';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
@@ -342,10 +341,7 @@ export default function App() {
         <div id="combos-section" />
         <div id="watches-section" />
 
-        {/* 8. Customer Reviews Section */}
-        <ReviewsSection />
-
-        {/* 9. FAQ Section */}
+        {/* 8. FAQ Section */}
         <FAQSection />
       </main>
 

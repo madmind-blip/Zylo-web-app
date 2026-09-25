@@ -40,11 +40,10 @@ export const Hero: React.FC<HeroProps> = ({ onShopCombos, onExploreBuilder, feat
           <span className="text-[#D4AF37] font-semibold">COD Available</span>
         </div>
 
-        {/* Big Syne Headline */}
-        <h1 className="font-heading font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-[1.05] sm:leading-[1] mb-4">
-          UPGRADE YOUR <br className="hidden sm:inline" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#F5E6BE] to-[#D4AF37]">
-            DRIP GAME
+        {/* Big Syne Headline with Flowing Aurora Gold Gradient */}
+        <h1 className="font-heading font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight uppercase leading-[1.05] sm:leading-[1] mb-4">
+          <span className="aurora-gold-text">
+            UPGRADE YOUR <br className="hidden sm:inline" /> DRIP GAME
           </span>
         </h1>
 

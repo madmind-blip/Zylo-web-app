@@ -75,12 +75,6 @@ export const Header: React.FC<HeaderProps> = ({
               Combo Builder
             </button>
             <button
-              onClick={() => scrollTo('reviews-section')}
-              className="hover:text-[#D4AF37] transition-colors cursor-pointer"
-            >
-              Reviews
-            </button>
-            <button
               onClick={() => scrollTo('faq-section')}
               className="hover:text-[#D4AF37] transition-colors cursor-pointer"
             >
