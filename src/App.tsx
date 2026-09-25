@@ -169,30 +169,28 @@ export default function App() {
   };
 
   const handleAddCustomComboToCart = (
-    top: { product: Product; size: string },
-    bottom: { product: Product; size: string },
-    watch: { product: Product },
-    finalPrice: number
+    items: Array<{ product: Product; size: string }>,
+    finalPrice: number,
+    discountPercent: number
   ) => {
-    const originalPrice = Math.round(finalPrice / 0.9);
+    const originalPrice = items.reduce((acc, it) => acc + (it.product.price || 0), 0);
+    const itemNames = items.map((it) => it.product.name).join(' + ');
     const comboProduct: Product = {
-      id: `custom-combo-${Date.now()}`,
-      name: `Custom Drip Set (${top.product.name} + ${bottom.product.name} + ${watch.product.name})`,
-      category: 'Combo Custom',
+      id: `custom-bundle-${Date.now()}`,
+      name: `Custom Bundle (${items.length} Items: ${itemNames.length > 40 ? itemNames.slice(0, 40) + '...' : itemNames})`,
+      category: 'Custom Bundle',
       categoryGroup: 'combos',
       price: finalPrice,
       originalPrice,
-      discountPercent: 10,
+      discountPercent,
       stock: 10,
-      images: [top.product.images[0] || '', bottom.product.images[0] || '', watch.product.images[0] || ''],
+      images: items.map((it) => it.product.images[0] || '').filter(Boolean).slice(0, 4),
       sizes: ['Complete Set'],
       isFreeSize: true,
-      description: 'Handcrafted custom drip combo with 10% instant bundle discount.',
+      description: `Handcrafted custom bundle with ${discountPercent}% discount.`,
       details: [
-        `Piece 1: ${top.product.name} [${top.size}]`,
-        `Piece 2: ${bottom.product.name} [${bottom.size}]`,
-        `Piece 3: ${watch.product.name}`,
-        '10% Instant Combo Discount applied',
+        ...items.map((it, idx) => `Item ${idx + 1}: ${it.product.name}${it.size && it.size !== 'Free Size' ? ` [${it.size}]` : ''}`),
+        ...(discountPercent > 0 ? [`${discountPercent}% Instant Bundle Discount applied`] : []),
       ],
       tags: ['Combo', 'Custom', 'Bundle'],
     };
@@ -200,20 +198,20 @@ export default function App() {
     setCartItems((prev) => [
       ...prev,
       {
-        id: `combo-${Date.now()}`,
+        id: `bundle-${Date.now()}`,
         product: comboProduct,
         selectedSize: 'Complete Set',
         quantity: 1,
         isCustomCombo: true,
-        comboItems: {
-          top: { name: top.product.name, size: top.size },
-          bottom: { name: bottom.product.name, size: bottom.size },
-          watch: { name: watch.product.name },
-        },
+        comboItems: items.length >= 3 ? {
+          top: { name: items[0].product.name, size: items[0].size || 'Free Size' },
+          bottom: { name: items[1].product.name, size: items[1].size || 'Free Size' },
+          watch: { name: items[2].product.name },
+        } : undefined,
       },
     ]);
 
-    showToast('Custom Combo added to your bag!');
+    showToast(`Custom Bundle (${items.length} items) added to your bag!`);
     setIsCartOpen(true);
   };
 

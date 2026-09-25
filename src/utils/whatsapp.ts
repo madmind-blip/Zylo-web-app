@@ -78,6 +78,49 @@ export function createCustomComboWhatsAppUrl(
   return `https://wa.me/${phone}?text=${text}`;
 }
 
+export function createFlexibleBundleWhatsAppUrl(
+  items: Array<{ product: Product; size: string }>,
+  originalPrice: number,
+  discountPercent: number,
+  discountAmount: number,
+  finalPrice: number
+): string {
+  const phone = getWhatsAppNumberClean();
+  const isFreeDelivery = finalPrice >= BRAND.deliveryThreshold;
+
+  const itemLines = items.map((it, idx) => {
+    const sizePart = it.size && it.size !== 'Free Size' ? ` [Size: ${it.size}]` : '';
+    return `📦 *${idx + 1}.* ${it.product.name}${sizePart} - ₹${it.product.price}`;
+  });
+
+  const lines = [
+    `🔥 *Hello Zyle! I created a Custom ${items.length}-Item Bundle on your website:*`,
+    ``,
+    ...itemLines,
+    ``,
+    `--------------------------`,
+    `Subtotal: ₹${originalPrice}`,
+    discountAmount > 0
+      ? `🎉 *Bundle Saver Discount (${discountPercent}% OFF): -₹${discountAmount}*`
+      : `_Add 3 items to unlock 10% OFF discount_`,
+    `✨ *Final Bundle Price: ₹${finalPrice}*`,
+    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE Delivery (Above ₹999)' : '₹69 Standard Delivery'}`,
+    `💳 *Payment Mode:* Cash on Delivery (COD)`,
+    `--------------------------`,
+    ``,
+    `📍 *My Shipping Details:*`,
+    `Name: `,
+    `Full Street Address & Landmark: `,
+    `City & Pincode: `,
+    `Mobile Number: `,
+    ``,
+    `Please confirm dispatch from Kota! Thank you! 🙌`
+  ];
+
+  const text = encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/${phone}?text=${text}`;
+}
+
 export function createCartWhatsAppUrl(
   cartItems: CartItem[],
   subtotal: number,
