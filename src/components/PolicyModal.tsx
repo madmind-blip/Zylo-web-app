@@ -36,7 +36,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
               <p>
-                • <strong>Free Shipping:</strong> On all orders of ₹999 or more. For orders below ₹999, a flat delivery fee of ₹69 applies nationwide.
+                • <strong>Free Shipping:</strong> On all orders of ₹999 or more. For orders below ₹999, a flat delivery fee of ₹150 applies nationwide.
               </p>
               <p>
                 • <strong>Delivery Timelines:</strong> Kota & Rajasthan deliveries take 24 to 48 hours. Metro cities & rest of India take 3 to 5 business days.

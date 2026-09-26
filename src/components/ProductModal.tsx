@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
+import { parseProductSizes } from '../utils/csvParser';
 import { ProductImage } from './ProductImage';
+import { CheckoutModal } from './CheckoutModal';
 
 interface ProductModalProps {
   product: Product | null;
@@ -17,31 +19,31 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
   if (!product) return null;
 
-  const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size';
-  const [selectedSize, setSelectedSize] = useState<string>(defaultSize);
+  const parsedSizesInfo = parseProductSizes(product.sizes);
+  const [selectedSize, setSelectedSize] = useState<string>(parsedSizesInfo.sizes[0] || 'Free Size');
   const [quantity, setQuantity] = useState<number>(1);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [addedToast, setAddedToast] = useState<boolean>(false);
   const [scrollY, setScrollY] = useState<number>(0);
   const [isEntranceZoom, setIsEntranceZoom] = useState<boolean>(true);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (product.sizes && product.sizes.length > 0) {
-      setSelectedSize(product.sizes[0]);
-    } else {
-      setSelectedSize('Free Size');
-    }
-    setQuantity(1);
-    setActiveImageIndex(0);
-    setAddedToast(false);
-    setScrollY(0);
-    setIsEntranceZoom(true);
+    if (product) {
+      const parsed = parseProductSizes(product.sizes);
+      setSelectedSize(parsed.sizes[0] || 'Free Size');
+      setQuantity(1);
+      setActiveImageIndex(0);
+      setAddedToast(false);
+      setScrollY(0);
+      setIsEntranceZoom(true);
 
-    // Initial cinematic entrance scale relaxation
-    const timer = setTimeout(() => {
-      setIsEntranceZoom(false);
-    }, 60);
-    return () => clearTimeout(timer);
+      // Initial cinematic entrance scale relaxation
+      const timer = setTimeout(() => {
+        setIsEntranceZoom(false);
+      }, 60);
+      return () => clearTimeout(timer);
+    }
   }, [product]);
 
   // Handle escape key
@@ -55,11 +57,14 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const isSoldOut = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock < 5;
-  const showSizeSelector = !product.isFreeSize && product.sizes && product.sizes.length > 1;
+  const { sizes: availableSizes, isFreeSize } = parseProductSizes(product.sizes);
+  const itemTotal = product.price * quantity;
+  const isFreeDelivery = itemTotal >= 999;
+  const shippingFee = isFreeDelivery ? 0 : 150;
+  const grandTotal = itemTotal + shippingFee;
 
   const handleOrderOnWhatsApp = () => {
-    const url = createProductWhatsAppUrl(product, selectedSize, quantity);
-    window.open(url, '_blank');
+    setIsCheckoutOpen(true);
   };
 
   const handleAddToCart = () => {
@@ -132,7 +137,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {/* High-Contrast Discount Tag */}
             {product.discountPercent > 0 && !isSoldOut && (
               <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#16A34A] text-white shadow-sm tracking-wide">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#DC2626] text-white shadow-sm tracking-wide">
                   -{product.discountPercent}%
                 </span>
               </div>
@@ -216,9 +221,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <span>Kota Hub</span>
             </div>
 
-            {/* Title */}
-            <h2 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-1.5 leading-snug">
-              {product.name}
+            {/* Title (UPPERCASE) */}
+            <h2 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-1.5 leading-snug uppercase tracking-tight">
+              {product.name.toUpperCase()}
             </h2>
 
             {product.subtitle && (
@@ -236,38 +241,48 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </span>
               )}
               {product.originalPrice > product.price && (
-                <span className="text-[11px] font-semibold text-[#4A5D45] bg-[#4A5D45]/10 px-2 py-0.5 rounded ml-auto">
+                <span className="text-[11px] font-semibold text-[#DC2626] bg-[#DC2626]/10 px-2 py-0.5 rounded ml-auto">
                   Save ₹{product.originalPrice - product.price}
                 </span>
               )}
             </div>
 
             {/* Size Selector */}
-            {showSizeSelector ? (
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="font-medium text-neutral-700">Size:</span>
-                  <span className="text-[#1A1A1A] font-semibold">{selectedSize}</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                        selectedSize === size
-                          ? 'bg-[#1A1A1A] text-white'
-                          : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-400'
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
+            {isFreeSize ? (
+              <div className="mb-4 flex items-center gap-2 text-xs">
+                <span className="font-semibold text-neutral-700">Size:</span>
+                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-neutral-100 text-[#1A1A1A] border border-neutral-200">
+                  Free Size
+                </span>
               </div>
             ) : (
-              <div className="mb-3 text-xs text-neutral-500">
-                Size: <span className="text-[#1A1A1A] font-medium">{product.sizes?.[0] || 'Free Size'}</span>
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="font-semibold text-neutral-700">Select Size:</span>
+                  <span className="text-[#1A1A1A] font-bold px-2 py-0.5 rounded bg-neutral-100 border border-neutral-200">
+                    {selectedSize}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {availableSizes.map((size) => {
+                    const isSelected = selectedSize === size;
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => setSelectedSize(size)}
+                        className={`min-w-[44px] h-10 px-3.5 rounded-xl text-xs font-heading font-bold transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                          isSelected
+                            ? 'bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] shadow-xs scale-102 ring-2 ring-[#4A5D45]/30'
+                            : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-400 hover:text-black'
+                        }`}
+                        aria-pressed={isSelected}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -356,6 +371,24 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Instant Checkout Order Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        items={[
+          {
+            name: product.name.toUpperCase(),
+            size: selectedSize,
+            quantity,
+            price: product.price,
+          },
+        ]}
+        total={grandTotal}
+        subtotal={itemTotal}
+        shippingFee={shippingFee}
+        title="Complete Your Order"
+      />
     </div>
   );
 };

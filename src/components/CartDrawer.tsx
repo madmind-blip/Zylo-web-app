@@ -46,15 +46,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const orderSummaryItems: OrderItemSummary[] = items.map((item) => {
     if (item.isCustomCombo && item.comboItems) {
       return {
-        name: `Custom Combo (${item.comboItems.top.name} + ${item.comboItems.bottom.name} + ${item.comboItems.watch.name})`,
+        name: `CUSTOM COMBO (${item.comboItems.top.name} + ${item.comboItems.bottom.name} + ${item.comboItems.watch.name})`.toUpperCase(),
         size: 'Complete Set',
         quantity: item.quantity,
         price: item.product.price,
       };
     }
     return {
-      name: item.product.name,
-      size: item.selectedSize,
+      name: item.product.name.toUpperCase(),
+      size: item.selectedSize || 'Free Size',
       quantity: item.quantity,
       price: item.product.price,
     };
@@ -178,8 +178,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <div className="flex-1 flex flex-col justify-between min-w-0">
                         <div>
                           <div className="flex items-start justify-between gap-2">
-                            <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#1A1A1A] line-clamp-1">
-                              {item.product.name}
+                            <h4 className="font-heading font-semibold text-xs sm:text-sm text-[#1A1A1A] line-clamp-1 uppercase">
+                              {item.product.name.toUpperCase()}
                             </h4>
                             <button
                               onClick={() => onRemoveItem(item.id)}

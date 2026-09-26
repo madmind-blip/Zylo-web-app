@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { MessageCircle, ShoppingBag, Plus, X, Search } from 'lucide-react';
 import { Product } from '../types';
 import { createFlexibleBundleWhatsAppUrl, OrderItemSummary } from '../utils/whatsapp';
+import { parseProductSizes } from '../utils/csvParser';
 import { BRAND } from '../data/content';
 import { ProductImage } from './ProductImage';
 import { CheckoutModal } from './CheckoutModal';
@@ -81,7 +82,8 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
       if (initial.length >= 3) break;
       if (!usedIds.has(p.id)) {
         usedIds.add(p.id);
-        const defaultSize = p.sizes && p.sizes.length > 0 ? p.sizes[0] : 'Free Size';
+        const parsed = parseProductSizes(p.sizes);
+        const defaultSize = parsed.sizes[0] || 'Free Size';
         initial.push({ product: p, size: defaultSize });
       }
     }
@@ -149,7 +151,8 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
       setSelectedItems((prev) => prev.filter((_, idx) => idx !== existingIndex));
     } else {
       // Add item
-      const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Free Size';
+      const parsed = parseProductSizes(product.sizes);
+      const defaultSize = parsed.sizes[0] || 'Free Size';
       setSelectedItems((prev) => [...prev, { product, size: defaultSize }]);
     }
   };
@@ -178,10 +181,10 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
     setTimeout(() => setAddedToast(false), 2200);
   };
 
-  // Summary items for CheckoutModal
+  // Summary items for CheckoutModal with UPPERCASE product name
   const bundleSummaryItems: OrderItemSummary[] = useMemo(() => {
     return selectedItems.map((it) => ({
-      name: it.product.name,
+      name: it.product.name.toUpperCase(),
       size: it.size,
       quantity: 1,
       price: it.product.price,
@@ -360,22 +363,22 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                         </div>
 
                         {/* Size picker if selected & has multiple sizes */}
-                        {isSelected && product.sizes && product.sizes.length > 1 && (
+                        {isSelected && !parseProductSizes(product.sizes).isFreeSize && parseProductSizes(product.sizes).sizes.length > 1 && (
                           <div
                             className="mt-2 pt-2 border-t border-neutral-200 flex items-center gap-1.5"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <span className="text-[10px] text-neutral-500">Size:</span>
+                            <span className="text-[10px] text-neutral-500 font-medium">Size:</span>
                             <div className="flex flex-wrap gap-1">
-                              {product.sizes.map((s) => (
+                              {parseProductSizes(product.sizes).sizes.map((s) => (
                                 <button
                                   key={s}
                                   type="button"
                                   onClick={() => handleUpdateSize(product.id, s)}
-                                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition cursor-pointer ${
+                                  className={`px-2 py-0.5 rounded text-[10px] font-heading font-semibold transition cursor-pointer ${
                                     selectedItem?.size === s
-                                      ? 'bg-[#1A1A1A] text-white font-semibold'
-                                      : 'bg-neutral-100 text-neutral-700 hover:text-black'
+                                      ? 'bg-[#1A1A1A] text-white font-bold'
+                                      : 'bg-neutral-100 text-neutral-700 hover:text-black border border-neutral-200'
                                   }`}
                                 >
                                   {s}
@@ -527,7 +530,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                     {itemCount === 0
                       ? 'Calculated on order'
                       : isFreeDelivery
-                      ? 'FREE Delivery'
+                      ? 'FREE Delivery (Above ₹999)'
                       : `+₹${BRAND.standardShippingFee}`}
                   </span>
                 </div>
@@ -584,8 +587,8 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
         items={bundleSummaryItems}
-        total={finalPrice}
-        subtotal={regularTotal}
+        total={finalPrice + (isFreeDelivery ? 0 : BRAND.standardShippingFee)}
+        subtotal={finalPrice}
         shippingFee={isFreeDelivery ? 0 : BRAND.standardShippingFee}
         title="Checkout Custom Bundle"
       />

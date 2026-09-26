@@ -47,6 +47,68 @@ export function formatGoogleDriveUrl(rawUrl: string): string {
 }
 
 /**
+ * Parses raw sizes string or array (comma, hyphen, slash, or semicolon separated)
+ * into a clean list of individual selectable sizes and detects Free Size.
+ */
+export function parseProductSizes(sizesInput: string[] | string | undefined): {
+  sizes: string[];
+  isFreeSize: boolean;
+} {
+  if (!sizesInput) {
+    return { sizes: ['Free Size'], isFreeSize: true };
+  }
+
+  let rawTokens: string[] = [];
+  if (Array.isArray(sizesInput)) {
+    for (const item of sizesInput) {
+      if (!item) continue;
+      const parts = item.split(/[,/\-|;]+/).map((s) => s.trim()).filter(Boolean);
+      rawTokens.push(...parts);
+    }
+  } else if (typeof sizesInput === 'string') {
+    rawTokens = sizesInput.split(/[,/\-|;]+/).map((s) => s.trim()).filter(Boolean);
+  }
+
+  if (rawTokens.length === 0) {
+    return { sizes: ['Free Size'], isFreeSize: true };
+  }
+
+  // Deduplicate while preserving order
+  const uniqueSizes: string[] = [];
+  for (const t of rawTokens) {
+    if (!uniqueSizes.some((u) => u.toLowerCase() === t.toLowerCase())) {
+      uniqueSizes.push(t);
+    }
+  }
+
+  const allFreeSize = uniqueSizes.every(
+    (s) =>
+      s.toLowerCase() === 'free size' ||
+      s.toLowerCase() === 'free-size' ||
+      s.toLowerCase() === 'freesize' ||
+      s.toLowerCase() === 'free'
+  );
+
+  if (allFreeSize) {
+    return { sizes: ['Free Size'], isFreeSize: true };
+  }
+
+  const filtered = uniqueSizes.filter(
+    (s) =>
+      s.toLowerCase() !== 'free size' &&
+      s.toLowerCase() !== 'free-size' &&
+      s.toLowerCase() !== 'freesize' &&
+      s.toLowerCase() !== 'free'
+  );
+
+  if (filtered.length === 0) {
+    return { sizes: ['Free Size'], isFreeSize: true };
+  }
+
+  return { sizes: filtered, isFreeSize: false };
+}
+
+/**
  * Normalizes user-pasted Google Sheet URLs to the direct published CSV export URL.
  * Works with:
  * - Published to web URL (pub?output=csv)
@@ -241,38 +303,8 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
     const stock = isNaN(stockVal) ? 10 : stockVal;
 
     // 5. Sizes rules:
-    // "SIZES is comma separated: split into an array. 'Free size' means a single option, no size selector needed."
-    const rawSizes = row['sizes'] || '';
-    let sizes: string[] = [];
-    let isFreeSize = false;
-
-    if (rawSizes.trim()) {
-      const splitSizes = rawSizes
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      if (splitSizes.length === 0) {
-        sizes = ['Free Size'];
-        isFreeSize = true;
-      } else if (
-        splitSizes.length === 1 &&
-        splitSizes[0].toLowerCase().includes('free size')
-      ) {
-        sizes = ['Free Size'];
-        isFreeSize = true;
-      } else if (splitSizes.every((s) => s.toLowerCase().includes('free size'))) {
-        sizes = ['Free Size'];
-        isFreeSize = true;
-      } else {
-        sizes = splitSizes;
-        isFreeSize = false;
-      }
-    } else {
-      // Default to Free Size if not provided
-      sizes = ['Free Size'];
-      isFreeSize = true;
-    }
+    // Comma or hyphen separated sizes, e.g. "M-L-XL-XXL" or "M, L, XL". "Free size" means single option.
+    const { sizes, isFreeSize } = parseProductSizes(row['sizes']);
 
     // 6. Image rule:
     // IMAGE holds direct link (e.g. i.ibb.co) or Google Drive link

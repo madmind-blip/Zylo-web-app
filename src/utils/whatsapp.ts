@@ -16,23 +16,28 @@ export function createProductWhatsAppUrl(
   const phone = getWhatsAppNumberClean();
   const totalPrice = product.price * quantity;
   const isFreeDelivery = totalPrice >= BRAND.deliveryThreshold;
+  const shippingFee = isFreeDelivery ? 0 : BRAND.standardShippingFee;
+  const grandTotal = totalPrice + shippingFee;
+  const upperName = product.name.toUpperCase();
+  const sizePart = selectedSize && selectedSize.toLowerCase() !== 'free size' ? ` (Size: ${selectedSize})` : '';
 
   const lines = [
-    `👋 *Hello Zyle! I want to order this item:*`,
+    `🛍️ *New Order — Zyle*`,
     ``,
-    `🏷️ *Product:* ${product.name}`,
-    `📏 *Selected Size:* ${selectedSize}`,
-    `🔢 *Quantity:* ${quantity}`,
-    `💰 *Price:* ₹${totalPrice} (Orig: ~₹${product.originalPrice * quantity}~)`,
-    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE (Above ₹999)' : 'Standard Delivery'}`,
-    `📦 *Payment:* Cash on Delivery (COD) / UPI`,
+    `*Order Summary*`,
+    `• ${upperName}${sizePart} x${quantity} — ₹${totalPrice}`,
     ``,
-    `📍 *My Delivery Details:*`,
+    `Subtotal: ₹${totalPrice}`,
+    `Delivery: ${isFreeDelivery ? 'FREE (Above ₹999)' : `₹${shippingFee}`}`,
+    `*Total: ₹${grandTotal}*`,
+    `Payment: Cash on Delivery / UPI on Delivery`,
+    ``,
+    `*Customer Details*`,
     `Name: `,
-    `Complete Address & Pincode: `,
-    `City: `,
+    `Phone: `,
+    `Address: `,
     ``,
-    `_Sent from Zyle Online Store (Kota, Rajasthan)_`
+    `Thank you for shopping with Zyle! 🙌`
   ];
 
   const text = encodeURIComponent(lines.join('\n'));
@@ -209,9 +214,10 @@ export function createOrderWhatsAppUrl(
   const phone = getWhatsAppNumberClean();
 
   const formattedItems = items.map((item) => {
-    const sizePart = item.size && item.size !== 'Free Size' ? ` (${item.size})` : '';
+    const upperName = item.name.toUpperCase();
+    const sizePart = item.size && item.size.toLowerCase() !== 'free size' ? ` (Size: ${item.size})` : '';
     const qtyPart = item.quantity > 1 ? ` x${item.quantity}` : ` x1`;
-    return `• ${item.name}${sizePart}${qtyPart} — ₹${item.price * item.quantity}`;
+    return `• ${upperName}${sizePart}${qtyPart} — ₹${item.price * item.quantity}`;
   });
 
   const lines = [

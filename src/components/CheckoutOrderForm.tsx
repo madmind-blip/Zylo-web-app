@@ -204,9 +204,9 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
         <div className="space-y-1 text-neutral-600 max-h-24 overflow-y-auto pr-1">
           {items.map((it, idx) => (
             <div key={idx} className="flex justify-between items-center text-[11px]">
-              <span className="truncate max-w-[200px] sm:max-w-[240px]">
-                {it.name}
-                {it.size && it.size !== 'Free Size' ? ` (${it.size})` : ''}
+              <span className="truncate max-w-[200px] sm:max-w-[240px] uppercase">
+                {it.name.toUpperCase()}
+                {it.size && it.size.toLowerCase() !== 'free size' ? ` (Size: ${it.size})` : ''}
                 {it.quantity > 1 ? ` x${it.quantity}` : ''}
               </span>
               <span className="font-medium shrink-0">₹{it.price * it.quantity}</span>
@@ -217,7 +217,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
           <div className="mt-2 pt-2 border-t border-neutral-200/60 flex justify-between text-[11px] text-neutral-500 font-mono">
             <span>Delivery (Kota Dispatch):</span>
             <span className={shippingFee === 0 ? 'text-[#4A5D45] font-semibold' : ''}>
-              {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+              {shippingFee === 0 ? 'FREE (Above ₹999)' : `₹${shippingFee}`}
             </span>
           </div>
         )}

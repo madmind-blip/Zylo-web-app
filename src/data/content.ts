@@ -8,7 +8,7 @@ export const BRAND = {
   location: 'Kota, Rajasthan',
   fullAddress: 'Zyle Fashion Hub, Vigyan Nagar & Aerodrome Circle Road, Kota, Rajasthan 324005',
   deliveryThreshold: 999, // Free delivery above ₹999
-  standardShippingFee: 69,
+  standardShippingFee: 150,
   codFee: 0, // Free COD
   instagramHandle: '@zyle.store_',
   instagramUrl: 'https://instagram.com/zyle.store_',
@@ -18,7 +18,7 @@ export const FAQS: FAQItem[] = [
   {
     category: 'Delivery',
     question: 'How fast is delivery & what are the charges?',
-    answer: 'We dispatch all orders within 24 hours directly from Kota, Rajasthan! Orders in Kota & Rajasthan arrive in 24–48 hours. Rest of India takes 3–5 working days. Delivery is completely FREE on all orders above ₹999 (nominal ₹69 under ₹999).'
+    answer: 'We dispatch all orders within 24 hours directly from Kota, Rajasthan! Orders in Kota & Rajasthan arrive in 24–48 hours. Rest of India takes 3–5 working days. Delivery is completely FREE on all orders above ₹999 (nominal ₹150 under ₹999).'
   },
   {
     category: 'Ordering',

@@ -38,7 +38,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Single High-Contrast Discount Tag */}
         {hasDiscount && !isSoldOut && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#16A34A] text-white shadow-sm tracking-wide">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#DC2626] text-white shadow-sm tracking-wide">
               -{product.discountPercent}%
             </span>
           </div>
@@ -74,9 +74,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.category}
           </div>
 
-          {/* Product Name in Syne */}
-          <h3 className="font-heading font-semibold text-sm sm:text-base text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors line-clamp-1 leading-snug mb-2">
-            {product.name}
+          {/* Product Name in Syne (UPPERCASE) */}
+          <h3 className="font-heading font-bold text-sm sm:text-base text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors line-clamp-1 leading-snug mb-2 uppercase tracking-tight">
+            {product.name.toUpperCase()}
           </h3>
         </div>
 

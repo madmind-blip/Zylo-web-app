@@ -22,7 +22,7 @@ import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
 import { MessageCircle, Check, AlertCircle, RefreshCw } from 'lucide-react';
 import { getWhatsAppNumberClean } from './utils/whatsapp';
-import { fetchProductsFromSheetUrl, PUBLISHED_SHEET_CSV_URL } from './utils/csvParser';
+import { fetchProductsFromSheetUrl, PUBLISHED_SHEET_CSV_URL, parseProductSizes } from './utils/csvParser';
 
 export default function App() {
   // First-visit cinematic entry screen (React state only, not localStorage)
@@ -143,7 +143,8 @@ export default function App() {
 
   // Cart operations
   const handleAddToCart = (product: Product, size?: string, quantity: number = 1) => {
-    const itemSize = size || (product.sizes?.[0] || 'Free Size');
+    const parsedSizes = parseProductSizes(product.sizes);
+    const itemSize = size || (parsedSizes.sizes[0] || 'Free Size');
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
         (item) => item.product.id === product.id && item.selectedSize === itemSize && !item.isCustomCombo
