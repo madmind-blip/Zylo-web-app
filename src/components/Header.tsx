@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, X, MessageCircle, MoreVertical } from 'lucide-react';
+import { ShoppingBag, Search, X, MessageCircle, MoreVertical, MessageSquare } from 'lucide-react';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 
 interface HeaderProps {
@@ -8,6 +8,9 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (q: string) => void;
   onSelectCategory?: (category: any) => void;
+  onNavigateContact?: () => void;
+  onNavigateHome?: () => void;
+  currentPage?: 'home' | 'contact';
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +19,9 @@ export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
   onSelectCategory,
+  onNavigateContact,
+  onNavigateHome,
+  currentPage = 'home',
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,6 +52,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navigateTo = (target: string, category?: string) => {
     setIsMenuOpen(false);
+    if (currentPage === 'contact' && onNavigateHome) {
+      onNavigateHome();
+    }
     if (target === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (onSelectCategory) onSelectCategory('all');
@@ -54,7 +63,9 @@ export const Header: React.FC<HeaderProps> = ({
     if (category && onSelectCategory) {
       onSelectCategory(category);
     }
-    scrollTo(target);
+    setTimeout(() => {
+      scrollTo(target);
+    }, 50);
   };
 
   return (
@@ -160,6 +171,23 @@ export const Header: React.FC<HeaderProps> = ({
                     <span>About Zyle & Kota Hub</span>
                   </button>
 
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      if (onNavigateContact) {
+                        onNavigateContact();
+                      }
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl transition cursor-pointer flex items-center justify-between font-medium ${
+                      currentPage === 'contact'
+                        ? 'bg-neutral-100 text-black font-semibold'
+                        : 'text-neutral-700 hover:text-black hover:bg-neutral-50'
+                    }`}
+                  >
+                    <span>Contact & Feedback</span>
+                    <MessageSquare className="w-3.5 h-3.5 text-neutral-400" />
+                  </button>
+
                   <div className="border-t border-neutral-100 my-1" />
 
                   <button
@@ -208,6 +236,16 @@ export const Header: React.FC<HeaderProps> = ({
               className="hover:text-[#1A1A1A] transition-colors cursor-pointer"
             >
               FAQ
+            </button>
+            <button
+              onClick={() => {
+                if (onNavigateContact) onNavigateContact();
+              }}
+              className={`hover:text-[#1A1A1A] transition-colors cursor-pointer ${
+                currentPage === 'contact' ? 'text-[#1A1A1A] font-semibold underline underline-offset-4' : ''
+              }`}
+            >
+              Contact & Feedback
             </button>
           </nav>
         </div>

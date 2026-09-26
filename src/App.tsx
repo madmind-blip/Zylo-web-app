@@ -16,6 +16,7 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { PolicyModal, PolicyType } from './components/PolicyModal';
 import { CinematicIntro } from './components/CinematicIntro';
+import { ContactFeedbackPage } from './components/ContactFeedbackPage';
 import { PRODUCTS } from './data/products';
 import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
@@ -252,6 +253,63 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, it) => acc + it.quantity, 0);
 
+  // Accessible page routing for Contact & Feedback
+  const [currentPage, setCurrentPage] = useState<'home' | 'contact'>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      if (
+        hash === '#contact' ||
+        hash === '#feedback' ||
+        hash === '#contact-feedback' ||
+        window.location.pathname === '/contact'
+      ) {
+        return 'contact';
+      }
+    }
+    return 'home';
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (
+        hash === '#contact' ||
+        hash === '#feedback' ||
+        hash === '#contact-feedback'
+      ) {
+        setCurrentPage('contact');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (hash === '' || hash === '#home') {
+        setCurrentPage('home');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
+  }, []);
+
+  const navigateToContact = () => {
+    setCurrentPage('contact');
+    window.location.hash = 'contact';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToHome = () => {
+    setCurrentPage('home');
+    if (
+      window.location.hash === '#contact' ||
+      window.location.hash === '#feedback' ||
+      window.location.hash === '#contact-feedback'
+    ) {
+      history.pushState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleFloatingWhatsApp = () => {
     const phone = getWhatsAppNumberClean();
     const text = encodeURIComponent('Hi Zyle Team! 👋 I am browsing your store from Kota. I have a question about an order.');
@@ -270,152 +328,164 @@ export default function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSelectCategory={setSelectedCategory}
+        onNavigateContact={navigateToContact}
+        onNavigateHome={navigateToHome}
+        currentPage={currentPage}
       />
 
       <main>
-        {/* 2. Minimal Hero */}
-        <Hero
-          onShopCombos={scrollToCombos}
-          onExploreBuilder={scrollToBuilder}
-          featuredImageUrl={products[1]?.images?.[0] || 'https://i.ibb.co/zK5ZGtF/IMG-20260924-171902-630.jpg'}
-          isIntroActive={showIntro}
-        />
+        {currentPage === 'contact' ? (
+          <ContactFeedbackPage onBackToHome={navigateToHome} />
+        ) : (
+          <>
+            {/* 2. Minimal Hero */}
+            <Hero
+              onShopCombos={scrollToCombos}
+              onExploreBuilder={scrollToBuilder}
+              featuredImageUrl={products[1]?.images?.[0] || 'https://i.ibb.co/zK5ZGtF/IMG-20260924-171902-630.jpg'}
+              isIntroActive={showIntro}
+            />
 
-        {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
-        <div id="products-section">
-          <CategoryChips
-            activeCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            totalCount={isLoading ? 0 : filteredProducts.length}
-          />
-        </div>
+            {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
+            <div id="products-section">
+              <CategoryChips
+                activeCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                totalCount={isLoading ? 0 : filteredProducts.length}
+              />
+            </div>
 
-        {/* 4. Product Grid (2 columns on mobile, 4 on desktop) */}
-        <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-1">
-                Curated Collection • Kota Hub
+            {/* 4. Product Grid (2 columns on mobile, 4 on desktop) */}
+            <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-1">
+                    Curated Collection • Kota Hub
+                  </div>
+                  <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#1A1A1A]">
+                    {selectedCategory === 'combos'
+                      ? 'Clothing Combos'
+                      : selectedCategory === 'watches'
+                      ? 'Luxury Watches'
+                      : selectedCategory === 'under-1500'
+                      ? 'Curated Under ₹1,500'
+                      : selectedCategory === 'under-2000'
+                      ? 'Curated Under ₹2,000'
+                      : selectedCategory === 'under-2500'
+                      ? 'Curated Under ₹2,500'
+                      : 'All Pieces'}
+                  </h2>
+                </div>
+
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="text-xs text-neutral-500 hover:text-black underline cursor-pointer"
+                  >
+                    Clear search
+                  </button>
+                )}
               </div>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#1A1A1A]">
-                {selectedCategory === 'combos'
-                  ? 'Clothing Combos'
-                  : selectedCategory === 'watches'
-                  ? 'Luxury Watches'
-                  : selectedCategory === 'under-1500'
-                  ? 'Curated Under ₹1,500'
-                  : selectedCategory === 'under-2000'
-                  ? 'Curated Under ₹2,000'
-                  : selectedCategory === 'under-2500'
-                  ? 'Curated Under ₹2,500'
-                  : 'All Pieces'}
-              </h2>
-            </div>
 
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="text-xs text-neutral-500 hover:text-black underline cursor-pointer"
-              >
-                Clear search
-              </button>
-            )}
-          </div>
+              {isLoading ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium tracking-wider uppercase mb-2">
+                    <span className="w-2 h-2 rounded-full bg-[#1A1A1A] animate-ping" />
+                    Loading live catalog from Google Sheets...
+                  </div>
+                  <ProductSkeletonGrid count={8} />
+                </div>
+              ) : fetchError ? (
+                <div className="py-14 px-6 max-w-lg mx-auto text-center bg-white border border-neutral-200 rounded-2xl shadow-sm relative overflow-hidden">
+                  <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mx-auto mb-4 text-[#1A1A1A]">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-2">
+                    Unable to Load Live Catalog
+                  </h3>
+                  <p className="font-body text-xs sm:text-sm text-neutral-500 mb-6 max-w-md mx-auto leading-relaxed">
+                    {fetchError}
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      onClick={() => loadProducts()}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Try Again</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setProducts(PRODUCTS);
+                        setFetchError(null);
+                        showToast('Loaded offline catalog');
+                      }}
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 hover:text-black border border-neutral-200 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Load Offline Catalog
+                    </button>
+                  </div>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="py-16 text-center bg-white border border-neutral-200 rounded-2xl p-8 max-w-xl mx-auto">
+                  <h3 className="font-heading font-bold text-base sm:text-lg text-[#1A1A1A] mb-2">
+                    No products found
+                  </h3>
+                  <p className="text-xs text-neutral-500 mb-6 font-body">
+                    {searchQuery
+                      ? `No items matched "${searchQuery}".`
+                      : 'No items in this category filter.'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('all');
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    View All Products
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                  {filteredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onSelect={(p) => setActiveProduct(p)}
+                      onAddToCart={(p, e) => {
+                        e.stopPropagation();
+                        handleAddToCart(p);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
 
-          {isLoading ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium tracking-wider uppercase mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#1A1A1A] animate-ping" />
-                Loading live catalog from Google Sheets...
-              </div>
-              <ProductSkeletonGrid count={8} />
-            </div>
-          ) : fetchError ? (
-            <div className="py-14 px-6 max-w-lg mx-auto text-center bg-white border border-neutral-200 rounded-2xl shadow-sm relative overflow-hidden">
-              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mx-auto mb-4 text-[#1A1A1A]">
-                <AlertCircle className="w-6 h-6" />
-              </div>
-              <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-2">
-                Unable to Load Live Catalog
-              </h3>
-              <p className="font-body text-xs sm:text-sm text-neutral-500 mb-6 max-w-md mx-auto leading-relaxed">
-                {fetchError}
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
-                  onClick={() => loadProducts()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Try Again</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setProducts(PRODUCTS);
-                    setFetchError(null);
-                    showToast('Loaded offline catalog');
-                  }}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 hover:text-black border border-neutral-200 text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Load Offline Catalog
-                </button>
-              </div>
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="py-16 text-center bg-white border border-neutral-200 rounded-2xl p-8 max-w-xl mx-auto">
-              <h3 className="font-heading font-bold text-base sm:text-lg text-[#1A1A1A] mb-2">
-                No products found
-              </h3>
-              <p className="text-xs text-neutral-500 mb-6 font-body">
-                {searchQuery
-                  ? `No items matched "${searchQuery}".`
-                  : 'No items in this category filter.'}
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('all');
-                }}
-                className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
-              >
-                View All Products
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onSelect={(p) => setActiveProduct(p)}
-                  onAddToCart={(p, e) => {
-                    e.stopPropagation();
-                    handleAddToCart(p);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+            {/* 6. COMBO BUILDER */}
+            <ComboBuilder
+              products={products}
+              onAddComboToCart={handleAddCustomComboToCart}
+            />
 
-        {/* 6. COMBO BUILDER */}
-        <ComboBuilder
-          products={products}
-          onAddComboToCart={handleAddCustomComboToCart}
-        />
+            {/* Dedicated section anchors for nav */}
+            <div id="combos-section" />
+            <div id="watches-section" />
 
-        {/* Dedicated section anchors for nav */}
-        <div id="combos-section" />
-        <div id="watches-section" />
-
-        {/* 8. FAQ Section */}
-        <FAQSection />
+            {/* 8. FAQ Section */}
+            <FAQSection />
+          </>
+        )}
       </main>
 
       {/* 10. Footer */}
-      <Footer onOpenPolicy={(type) => setActivePolicy(type)} />
+      <Footer
+        onOpenPolicy={(type) => setActivePolicy(type)}
+        onNavigateContact={navigateToContact}
+      />
 
       {/* 5. Product Detail Popup Modal */}
       <ProductModal

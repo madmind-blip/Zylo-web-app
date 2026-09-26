@@ -6,9 +6,10 @@ import { PolicyType } from './PolicyModal';
 
 interface FooterProps {
   onOpenPolicy: (type: PolicyType) => void;
+  onNavigateContact?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact }) => {
   const handleWhatsApp = () => {
     const phone = getWhatsAppNumberClean();
     const text = encodeURIComponent('Hi Zyle Team! 👋 I found your store online and had a question.');
@@ -154,6 +155,16 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy }) => {
                   Streetwear Size & Fit Chart
                 </button>
               </li>
+              {onNavigateContact && (
+                <li>
+                  <button
+                    onClick={onNavigateContact}
+                    className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer font-medium"
+                  >
+                    Contact & Feedback (Developer)
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 

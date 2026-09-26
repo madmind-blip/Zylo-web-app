@@ -166,3 +166,23 @@ export function createCartWhatsAppUrl(
   const text = encodeURIComponent(lines.join('\n'));
   return `https://wa.me/${phone}?text=${text}`;
 }
+
+export function createFeedbackWhatsAppUrl(
+  type: string,
+  message: string,
+  name?: string
+): string {
+  const phone = getWhatsAppNumberClean();
+  const trimmedName = name?.trim();
+  
+  const lines = [
+    'Zyle Feedback',
+    `Type: ${type}`,
+    ...(trimmedName ? [`Name: ${trimmedName}`] : []),
+    `Message: ${message.trim()}`
+  ];
+
+  const text = encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/${phone}?text=${text}`;
+}
+
