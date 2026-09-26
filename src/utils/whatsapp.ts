@@ -167,19 +167,68 @@ export function createCartWhatsAppUrl(
   return `https://wa.me/${phone}?text=${text}`;
 }
 
-export function createFeedbackWhatsAppUrl(
-  type: string,
-  message: string,
-  name?: string
+export interface CustomerOrderDetails {
+  fullName: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  paymentMode: 'Cash on Delivery' | 'UPI on Delivery';
+}
+
+export interface OrderItemSummary {
+  name: string;
+  size?: string;
+  quantity: number;
+  price: number;
+}
+
+/**
+ * Formats a WhatsApp order message according to the exact required structure:
+ * 🛍️ *New Order — Zyle*
+ * 
+ * *Customer Details*
+ * Name: [name]
+ * Phone: [phone]
+ * Address: [address], [city], [state] - [pincode]
+ * 
+ * *Order Summary*
+ * [list each item: name, size if applicable, quantity, price]
+ * 
+ * *Total: ₹[total]*
+ * Payment: [COD/UPI on Delivery]
+ * 
+ * Thank you for shopping with Zyle! 🙌
+ */
+export function createOrderWhatsAppUrl(
+  customer: CustomerOrderDetails,
+  items: OrderItemSummary[],
+  total: number
 ): string {
   const phone = getWhatsAppNumberClean();
-  const trimmedName = name?.trim();
-  
+
+  const formattedItems = items.map((item) => {
+    const sizePart = item.size && item.size !== 'Free Size' ? ` (${item.size})` : '';
+    const qtyPart = item.quantity > 1 ? ` x${item.quantity}` : ` x1`;
+    return `• ${item.name}${sizePart}${qtyPart} — ₹${item.price * item.quantity}`;
+  });
+
   const lines = [
-    'Zyle Feedback',
-    `Type: ${type}`,
-    ...(trimmedName ? [`Name: ${trimmedName}`] : []),
-    `Message: ${message.trim()}`
+    `🛍️ *New Order — Zyle*`,
+    ``,
+    `*Customer Details*`,
+    `Name: ${customer.fullName.trim()}`,
+    `Phone: ${customer.phone.trim()}`,
+    `Address: ${customer.address.trim()}, ${customer.city.trim()}, ${customer.state.trim()} - ${customer.pincode.trim()}`,
+    ``,
+    `*Order Summary*`,
+    ...formattedItems,
+    ``,
+    `*Total: ₹${total}*`,
+    `Payment: ${customer.paymentMode}`,
+    ``,
+    `Thank you for shopping with Zyle! 🙌`,
   ];
 
   const text = encodeURIComponent(lines.join('\n'));

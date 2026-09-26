@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { MessageCircle, ShoppingBag, Plus, X, Search } from 'lucide-react';
 import { Product } from '../types';
-import { createFlexibleBundleWhatsAppUrl } from '../utils/whatsapp';
+import { createFlexibleBundleWhatsAppUrl, OrderItemSummary } from '../utils/whatsapp';
 import { BRAND } from '../data/content';
 import { ProductImage } from './ProductImage';
+import { CheckoutModal } from './CheckoutModal';
 
 export interface SelectedBundleItem {
   product: Product;
@@ -68,6 +69,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addedToast, setAddedToast] = useState(false);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   // Initialize with 3 items from products if available so customer immediately sees the 10% discount in action
   const [selectedItems, setSelectedItems] = useState<SelectedBundleItem[]>(() => {
@@ -162,17 +164,10 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
     );
   };
 
-  // WhatsApp Order
+  // WhatsApp Order Flow with Order Form
   const handleOrderWhatsApp = () => {
     if (selectedItems.length === 0) return;
-    const url = createFlexibleBundleWhatsAppUrl(
-      selectedItems,
-      regularTotal,
-      discountPercent,
-      discountAmount,
-      finalPrice
-    );
-    window.open(url, '_blank');
+    setIsCheckoutModalOpen(true);
   };
 
   // Add Bundle to Cart
@@ -182,6 +177,16 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 2200);
   };
+
+  // Summary items for CheckoutModal
+  const bundleSummaryItems: OrderItemSummary[] = useMemo(() => {
+    return selectedItems.map((it) => ({
+      name: it.product.name,
+      size: it.size,
+      quantity: 1,
+      price: it.product.price,
+    }));
+  }, [selectedItems]);
 
   if (!products || products.length === 0) return null;
 
@@ -573,6 +578,17 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
           </div>
         </div>
       </div>
+
+      {/* Checkout Order Form Modal for Direct Bundle Order */}
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        items={bundleSummaryItems}
+        total={finalPrice}
+        subtotal={regularTotal}
+        shippingFee={isFreeDelivery ? 0 : BRAND.standardShippingFee}
+        title="Checkout Custom Bundle"
+      />
     </section>
   );
 };
