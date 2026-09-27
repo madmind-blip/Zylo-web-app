@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/</loc>
+    <loc>https://zyle.store/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>/#catalog</loc>
+    <loc>https://zyle.store/#catalog</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>/#combos</loc>
+    <loc>https://zyle.store/#combos</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/#watches</loc>
+    <loc>https://zyle.store/#watches</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/#combo-builder</loc>
+    <loc>https://zyle.store/#combo-builder</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>/#faq-section</loc>
+    <loc>https://zyle.store/#faq-section</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>/#contact</loc>
+    <loc>https://zyle.store/#contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
