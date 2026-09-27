@@ -75,7 +75,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           {/* Product Name in Syne (UPPERCASE) */}
-          <h3 className="font-heading font-bold text-sm sm:text-base text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors line-clamp-1 leading-snug mb-2 uppercase tracking-tight">
+          <h3
+            className="font-heading font-bold text-xs sm:text-[13px] text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors line-clamp-2 leading-tight sm:leading-snug mb-2 uppercase tracking-tight min-h-[2.1rem] sm:min-h-[2.4rem]"
+            title={product.name.toUpperCase()}
+          >
             {product.name.toUpperCase()}
           </h3>
         </div>

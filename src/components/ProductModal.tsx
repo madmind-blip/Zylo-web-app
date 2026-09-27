@@ -241,7 +241,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </span>
               )}
               {product.originalPrice > product.price && (
-                <span className="text-[11px] font-semibold text-[#DC2626] bg-[#DC2626]/10 px-2 py-0.5 rounded ml-auto">
+                <span className="text-[11px] font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2 py-0.5 rounded ml-auto">
                   Save ₹{product.originalPrice - product.price}
                 </span>
               )}
