@@ -167,7 +167,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <div className="w-20 h-24 rounded-lg overflow-hidden bg-neutral-100 shrink-0 border border-neutral-200/80">
                         <ProductImage
                           src={item.product.images[0]}
-                          alt={item.product.name}
+                          alt={`${item.product.name} — shopping bag item`}
                           productName={item.product.name}
                           category={item.product.category}
                           className="w-full h-full object-cover"

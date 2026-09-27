@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
-import { parseProductSizes } from '../utils/csvParser';
+import { parseProductSizes, getProductCategoryHighlights } from '../utils/csvParser';
 import { ProductImage } from './ProductImage';
 import { CheckoutModal } from './CheckoutModal';
 
@@ -58,6 +58,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const isSoldOut = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock < 5;
   const { sizes: availableSizes, isFreeSize } = parseProductSizes(product.sizes);
+  const highlights =
+    product.details &&
+    product.details.length > 0 &&
+    !product.details.includes('Set of premium breathable cotton clothing items')
+      ? product.details
+      : getProductCategoryHighlights(product.name, product.category, product.categoryGroup);
   const itemTotal = product.price * quantity;
   const isFreeDelivery = itemTotal >= 999;
   const shippingFee = isFreeDelivery ? 0 : 150;
@@ -197,7 +203,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 >
                   <ProductImage
                     src={img}
-                    alt="thumbnail"
+                    alt={`${product.name} thumbnail view ${idx + 1}`}
                     productName={product.name}
                     category={product.category}
                     className="w-full h-full object-cover"
@@ -214,19 +220,15 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           className="w-full md:w-7/12 p-5 sm:p-6 overflow-y-auto max-h-[60vh] md:max-h-none flex flex-col justify-between"
         >
           <div>
-            {/* Category */}
+            {/* Category Breadcrumb Subtitle */}
             <div className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1">
               <span>{product.categoryGroup === 'combos' ? 'Combos' : product.categoryGroup === 'watches' ? 'Watches' : product.category}</span>
             </div>
 
             {/* Title (UPPERCASE) */}
-            <h2 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-1.5 leading-snug uppercase tracking-tight">
+            <h2 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-3 leading-snug uppercase tracking-tight">
               {product.name.toUpperCase()}
             </h2>
-
-            {product.subtitle && (
-              <p className="text-xs text-neutral-500 mb-3">{product.subtitle}</p>
-            )}
 
             {/* Pricing Section */}
             <div className="flex items-baseline gap-2.5 p-3 rounded-xl bg-neutral-50 border border-neutral-200/80 mb-4">
@@ -309,13 +311,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               </div>
             )}
 
-            {/* Description */}
-            <div className="mb-4 text-xs text-neutral-600 leading-relaxed font-body">
-              <p className="mb-2">{product.description}</p>
-              {product.details && product.details.length > 0 && (
-                <ul className="space-y-1 text-neutral-600">
-                  {product.details.map((detail, idx) => (
-                    <li key={idx} className="flex items-center gap-1.5">
+            {/* Description & Category Highlights */}
+            <div className="mb-4">
+              <h3 className="text-xs font-heading font-bold text-neutral-800 uppercase tracking-wider mb-1.5">
+                Description
+              </h3>
+              <p className="text-xs sm:text-[13px] text-neutral-600 leading-relaxed font-body mb-3">
+                {product.description || `${product.name} — crafted with premium materials and fast nationwide delivery.`}
+              </p>
+
+              {highlights.length > 0 && (
+                <ul className="space-y-1.5 text-xs text-neutral-600 font-body">
+                  {highlights.map((detail, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-[#4A5D45] shrink-0" />
                       <span>{detail}</span>
                     </li>

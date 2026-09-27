@@ -109,6 +109,103 @@ export function parseProductSizes(sizesInput: string[] | string | undefined): {
 }
 
 /**
+ * Generates sensible, category-specific product feature bullets plus universal assurances.
+ */
+export function getProductCategoryHighlights(
+  name: string = '',
+  category: string = '',
+  categoryGroup: 'combos' | 'watches' | 'other' = 'other'
+): string[] {
+  const n = name.toLowerCase();
+  const c = category.toLowerCase();
+
+  const bullets: string[] = [];
+
+  // 1. Watches
+  if (categoryGroup === 'watches' || c.includes('watch') || n.includes('watch')) {
+    bullets.push('Water resistant & durable build');
+    bullets.push('Adjustable strap with premium finish');
+    bullets.push('Exhibition dial design & scratch-resistant glass');
+  }
+  // 2. Jackets / Hoodies / Winterwear
+  else if (
+    c.includes('jacket') ||
+    c.includes('hoodie') ||
+    c.includes('bomber') ||
+    c.includes('coat') ||
+    c.includes('windbreaker') ||
+    c.includes('sweatshirt') ||
+    n.includes('jacket') ||
+    n.includes('hoodie') ||
+    n.includes('bomber')
+  ) {
+    bullets.push('All season wear with thermal comfort');
+    bullets.push('Machine washable & colorfast fabric');
+    bullets.push('Reinforced heavy-duty zipper & premium stitching');
+  }
+  // 3. Combos & Sets
+  else if (
+    categoryGroup === 'combos' ||
+    c.includes('combo') ||
+    c.includes('bundle') ||
+    c.includes('pack') ||
+    c.includes('set') ||
+    n.includes('combo')
+  ) {
+    bullets.push('Includes all listed pieces in the bundle');
+    bullets.push('Curated streetwear color-matched styling');
+    bullets.push('Pre-shrunk anti-fade treated fabrics');
+  }
+  // 4. Pants / Bottoms / Cargos / Jeans
+  else if (
+    c.includes('cargo') ||
+    c.includes('pant') ||
+    c.includes('bottom') ||
+    c.includes('jean') ||
+    c.includes('denim') ||
+    c.includes('trouser') ||
+    c.includes('chino') ||
+    n.includes('cargo') ||
+    n.includes('pant') ||
+    n.includes('denim')
+  ) {
+    bullets.push('Comfort-stretch durable fabric');
+    bullets.push('Deep utility pockets & relaxed drape');
+    bullets.push('Reinforced seams for everyday wear');
+  }
+  // 5. Shirts / T-shirts / Tops
+  else if (
+    c.includes('shirt') ||
+    c.includes('tee') ||
+    c.includes('top') ||
+    c.includes('polo') ||
+    n.includes('shirt') ||
+    n.includes('tee')
+  ) {
+    bullets.push('Breathable premium cotton blend');
+    bullets.push('Modern streetwear relaxed fit');
+    bullets.push('Pre-shrunk anti-fade color treatment');
+  }
+  // 6. Shoes / Footwear
+  else if (c.includes('shoe') || c.includes('sneaker') || n.includes('shoe') || n.includes('sneaker')) {
+    bullets.push('Cushioned anti-fatigue sole');
+    bullets.push('High-traction grip & breathable lining');
+    bullets.push('Durable premium finish');
+  }
+  // 7. General / Accessories
+  else {
+    bullets.push('Premium finish & durable quality');
+    bullets.push('Modern minimalist streetwear design');
+  }
+
+  // Universal bullets required across all products:
+  bullets.push('Fast dispatch nationwide');
+  bullets.push('Cash on Delivery available');
+
+  return bullets;
+}
+
+/**
  * Normalizes user-pasted Google Sheet URLs to the direct published CSV export URL.
  * Works with:
  * - Published to web URL (pub?output=csv)
@@ -339,19 +436,7 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
         .filter(Boolean);
     }
     if (details.length === 0) {
-      if (categoryGroup === 'watches') {
-        details.push('High-precision quartz mechanism & exhibition design');
-        details.push('Scratch-resistant mineral crystal glass & solid steel bezel');
-        details.push('Adjustable comfortable strap (Free Size)');
-        details.push('Ships in premium protective gift box');
-        details.push('Cash on Delivery available across India');
-      } else {
-        details.push('Set of premium breathable cotton clothing items');
-        details.push('Pre-shrunk anti-fade color treatment');
-        details.push('Modern streetwear relaxed drape');
-        details.push('Fast express dispatch nationwide');
-        details.push('Cash on Delivery available with fast doorstep receipt');
-      }
+      details = getProductCategoryHighlights(name, rawCategory, categoryGroup);
     }
 
     // 8. Combo role for Combo Builder

@@ -315,7 +315,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                         <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-[#F5F5F5] relative">
                           <ProductImage
                             src={product.images[0]}
-                            alt={product.name}
+                            alt={`${product.name} — ${product.category}`}
                             productName={product.name}
                             category={product.category}
                           />
@@ -460,7 +460,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-neutral-100 shrink-0">
                       <ProductImage
                         src={item.product.images[0]}
-                        alt={item.product.name}
+                        alt={`${item.product.name} — bundle piece`}
                         productName={item.product.name}
                         category={item.product.category}
                       />

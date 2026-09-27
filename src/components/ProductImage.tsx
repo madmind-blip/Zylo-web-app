@@ -82,7 +82,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
 
       <img
         src={currentSrc}
-        alt={alt}
+        alt={alt || `${productName} — product image`}
         loading="lazy"
         onLoad={() => setIsLoaded(true)}
         onError={handleError}

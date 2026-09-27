@@ -28,7 +28,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F5F5F5]">
         <ProductImage
           src={product.images[0]}
-          alt={product.name}
+          alt={`${product.name} — ${product.category}`}
           productName={product.name}
           category={product.category}
           isSoldOut={isSoldOut}

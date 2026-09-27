@@ -68,7 +68,7 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) =>
         {phase === 'wordmark' && (
           <div className="flex flex-col items-center justify-center">
             {/* Wordmark: ZYLE in Syne bold, staggered rise */}
-            <h1 className="relative font-heading font-extrabold text-6xl sm:text-8xl md:text-9xl text-[#1A1A1A] tracking-widest uppercase flex items-center justify-center gap-1 sm:gap-2 leading-none">
+            <div role="banner" aria-label="Zyle" className="relative font-heading font-extrabold text-6xl sm:text-8xl md:text-9xl text-[#1A1A1A] tracking-widest uppercase flex items-center justify-center gap-1 sm:gap-2 leading-none">
               {letters.map((char, index) => (
                 <span
                   key={index}
@@ -80,7 +80,7 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({ onComplete }) =>
                   {char}
                 </span>
               ))}
-            </h1>
+            </div>
 
             {/* Thin Divider under the wordmark */}
             <div
