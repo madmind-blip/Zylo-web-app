@@ -5,8 +5,8 @@ export const BRAND = {
   tagline: 'Premium look, pocket price',
   whatsappNumber: '+917073765833',
   whatsappDisplay: '+91 7073765833',
-  location: 'Kota, Rajasthan',
-  fullAddress: 'Zyle Fashion Hub, Vigyan Nagar & Aerodrome Circle Road, Kota, Rajasthan 324005',
+  location: 'India',
+  fullAddress: 'Zyle Fashion Hub, Express Doorstep Delivery Across India',
   deliveryThreshold: 999, // Free delivery above ₹999
   standardShippingFee: 150,
   codFee: 0, // Free COD
@@ -18,7 +18,7 @@ export const FAQS: FAQItem[] = [
   {
     category: 'Delivery',
     question: 'How fast is delivery & what are the charges?',
-    answer: 'We dispatch all orders within 24 hours directly from Kota, Rajasthan! Orders in Kota & Rajasthan arrive in 24–48 hours. Rest of India takes 3–5 working days. Delivery is completely FREE on all orders above ₹999 (nominal ₹150 under ₹999).'
+    answer: 'We dispatch all orders within 24 hours with express couriers nationwide! Major metro cities arrive in 2–3 business days. Rest of India takes 3–5 working days. Delivery is completely FREE on all orders above ₹999 (nominal ₹150 under ₹999).'
   },
   {
     category: 'Ordering',
@@ -43,6 +43,6 @@ export const FAQS: FAQItem[] = [
   {
     category: 'Watches',
     question: 'Are Zyle watches water-resistant and durable?',
-    answer: 'Yes! All Zyle watches feature Japanese quartz movements, hardened mineral scratch-resistant glass, and 30M splash resistance (safe for daily rain, handwashing, and sweat). Each watch undergoes rigorous 48-hour timekeeping inspection in Kota before shipping.'
+    answer: 'Yes! All Zyle watches feature Japanese quartz movements, hardened mineral scratch-resistant glass, and 30M splash resistance (safe for daily rain, handwashing, and sweat). Each watch undergoes rigorous 48-hour timekeeping inspection before shipping.'
   }
 ];

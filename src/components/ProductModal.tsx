@@ -217,8 +217,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {/* Category */}
             <div className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1">
               <span>{product.categoryGroup === 'combos' ? 'Combos' : product.categoryGroup === 'watches' ? 'Watches' : product.category}</span>
-              <span className="mx-1.5">·</span>
-              <span>Kota Hub</span>
             </div>
 
             {/* Title (UPPERCASE) */}

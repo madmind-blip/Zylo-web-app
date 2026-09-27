@@ -215,7 +215,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
         </div>
         {shippingFee !== undefined && subtotal !== undefined && (
           <div className="mt-2 pt-2 border-t border-neutral-200/60 flex justify-between text-[11px] text-neutral-500 font-mono">
-            <span>Delivery (Kota Dispatch):</span>
+            <span>Delivery (Nationwide):</span>
             <span className={shippingFee === 0 ? 'text-[#4A5D45] font-semibold' : ''}>
               {shippingFee === 0 ? 'FREE (Above ₹999)' : `₹${shippingFee}`}
             </span>
@@ -492,7 +492,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500 mt-2 text-center">
           <ShieldCheck className="w-3.5 h-3.5 text-[#4A5D45] shrink-0" />
-          <span>Direct dispatch from Kota Hub • 7-day easy size exchange</span>
+          <span>Fast nationwide delivery • 7-day easy size exchange</span>
         </div>
       </div>
     </form>

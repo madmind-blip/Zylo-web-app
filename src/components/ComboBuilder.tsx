@@ -202,7 +202,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
           <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-2">
-            Bundle Studio • Kota Hub
+            Bundle Studio
           </div>
 
           <h2 className="font-heading font-bold text-2xl sm:text-4xl text-[#1A1A1A] tracking-tight mb-2">
@@ -552,7 +552,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
 
               {/* Delivery dispatch info */}
               <div className="my-3 text-center text-xs text-neutral-500">
-                Same-Day Dispatch from Kota, Rajasthan • Cash on Delivery
+                Fast Express Dispatch • Cash on Delivery Available Nationwide
               </div>
 
               {/* Action Buttons */}

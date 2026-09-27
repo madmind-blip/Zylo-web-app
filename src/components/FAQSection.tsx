@@ -12,7 +12,7 @@ export const FAQSection: React.FC = () => {
 
   const handleAskWhatsApp = () => {
     const phone = getWhatsAppNumberClean();
-    const text = encodeURIComponent('Hi Zyle Team! 👋 I have a quick question about ordering from Kota.');
+    const text = encodeURIComponent('Hi Zyle Team! 👋 I have a quick question about ordering.');
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
 
@@ -84,7 +84,7 @@ export const FAQSection: React.FC = () => {
               Have a special custom question?
             </h4>
             <p className="text-xs text-neutral-500 font-body">
-              Chat live with our Kota team on WhatsApp for size recommendations or instant photos of pieces.
+              Chat live with our team on WhatsApp for size recommendations or instant photos of pieces.
             </p>
           </div>
 

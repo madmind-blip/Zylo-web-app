@@ -30,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
                 Direct WhatsApp Ordering System
               </div>
               <div className="text-xs text-neutral-500">
-                Direct confirmation and instant dispatch tracking from our Kota hub.
+                Direct confirmation and instant dispatch tracking nationwide.
               </div>
             </div>
           </div>
@@ -61,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
             </p>
 
             <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed">
-              Curated streetwear combo clothes and high-finish wristwatches at accessible prices. Dispatched directly from Kota, Rajasthan.
+              Curated streetwear combo clothes and high-finish wristwatches at accessible prices. Fast dispatch nationwide.
             </p>
 
             {/* Social Icons & Handle */}
@@ -128,7 +128,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
                   onClick={() => onOpenPolicy('shipping')}
                   className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
-                  Shipping & Kota Dispatch (₹999 Free)
+                  Shipping & Delivery (₹999 Free)
                 </button>
               </li>
               <li>
@@ -171,13 +171,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
           {/* Location & Contact */}
           <div className="space-y-3">
             <h4 className="font-heading font-semibold text-[#1A1A1A] text-xs uppercase tracking-wider mb-4">
-              Store & Dispatch Hub
+              Nationwide Delivery & Support
             </h4>
             
             <div className="flex items-start gap-2.5 text-xs sm:text-sm">
               <MapPin className="w-4 h-4 text-neutral-500 shrink-0 mt-0.5" />
               <span>
-                <strong className="text-[#1A1A1A]">Kota, Rajasthan, India</strong> <br />
+                <strong className="text-[#1A1A1A]">Pan-India Delivery</strong> <br />
                 {BRAND.fullAddress}
               </span>
             </div>
@@ -210,10 +210,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div>
-            © {new Date().getFullYear()} Zyle Store. All rights reserved. Kota, Rajasthan.
+            © {new Date().getFullYear()} Zyle Store. All rights reserved.
           </div>
           <div className="flex items-center gap-1">
-            <span>Crafted for streetwear enthusiasts in Kota, Rajasthan</span>
+            <span>Crafted for streetwear enthusiasts nationwide</span>
           </div>
         </div>
       </div>

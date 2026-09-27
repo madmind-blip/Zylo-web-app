@@ -53,7 +53,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {title}
               </h3>
               <p className="text-[11px] text-neutral-500 font-body">
-                Dispatched directly from Kota, Rajasthan
+                Fast nationwide delivery • Cash on Delivery available
               </p>
             </div>
           </div>

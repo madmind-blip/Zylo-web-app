@@ -32,14 +32,14 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
               Shipping & Delivery Policy
             </h3>
             <p className="text-xs text-[#4A5D45] font-semibold mb-4">
-              Direct dispatch from Kota, Rajasthan
+              Fast express dispatch nationwide
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
               <p>
                 • <strong>Free Shipping:</strong> On all orders of ₹999 or more. For orders below ₹999, a flat delivery fee of ₹150 applies nationwide.
               </p>
               <p>
-                • <strong>Delivery Timelines:</strong> Kota & Rajasthan deliveries take 24 to 48 hours. Metro cities & rest of India take 3 to 5 business days.
+                • <strong>Delivery Timelines:</strong> Major metro cities take 2 to 3 business days. Rest of India takes 3 to 5 business days.
               </p>
               <p>
                 • <strong>Tracking:</strong> Real-time WhatsApp tracking updates and courier tracking URLs are dispatched within 24 hours of placing your order.
@@ -92,7 +92,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
                 • <strong>Available Nationwide:</strong> COD is valid across 19,000+ PIN codes in India through our courier partners (Bluedart, Delhivery, Xpressbees).
               </p>
               <p>
-                • <strong>Order Verification:</strong> To prevent duplicate and prank bookings, our Kota team may send a 1-click confirmation prompt on WhatsApp before parcel handover to the courier.
+                • <strong>Order Verification:</strong> To prevent duplicate and prank bookings, our team may send a 1-click confirmation prompt on WhatsApp before parcel handover to the courier.
               </p>
               <p>
                 • <strong>Payment Mode at Doorstep:</strong> You can pay the delivery executive in cash or scan their UPI QR code on arrival.

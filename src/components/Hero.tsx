@@ -99,7 +99,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Single Refined Subheadline */}
         <p className="font-body text-neutral-700 text-sm sm:text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed mb-8">
-          Curated streetwear combo clothes and high-finish watches engineered for effortless style. Direct Kota dispatch with Cash on Delivery nationwide.
+          Curated streetwear combo clothes and high-finish watches engineered for effortless style. Fast dispatch with Cash on Delivery, nationwide.
         </p>
 
         {/* Single Clean CTA Button */}

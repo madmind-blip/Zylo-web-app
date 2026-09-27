@@ -66,7 +66,7 @@ export function createCustomComboWhatsAppUrl(
     `Subtotal: ₹${originalPrice}`,
     `🎉 *Combo Saver Discount (10% OFF): -₹${discountAmount}*`,
     `✨ *Final Combo Price: ₹${finalPrice}*`,
-    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE Delivery (Above ₹999)' : '₹69 Standard Delivery'}`,
+    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE Delivery (Above ₹999)' : `₹${BRAND.standardShippingFee} Standard Delivery`}`,
     `💳 *Payment Mode:* Cash on Delivery (COD)`,
     `--------------------------`,
     ``,
@@ -76,7 +76,7 @@ export function createCustomComboWhatsAppUrl(
     `City & Pincode: `,
     `Mobile Number: `,
     ``,
-    `Please confirm dispatch from Kota! Thank you! 🙌`
+    `Please confirm dispatch! Thank you! 🙌`
   ];
 
   const text = encodeURIComponent(lines.join('\n'));
@@ -109,7 +109,7 @@ export function createFlexibleBundleWhatsAppUrl(
       ? `🎉 *Bundle Saver Discount (${discountPercent}% OFF): -₹${discountAmount}*`
       : `_Add 3 items to unlock 10% OFF discount_`,
     `✨ *Final Bundle Price: ₹${finalPrice}*`,
-    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE Delivery (Above ₹999)' : '₹69 Standard Delivery'}`,
+    `🚚 *Delivery:* ${isFreeDelivery ? 'FREE Delivery (Above ₹999)' : `₹${BRAND.standardShippingFee} Standard Delivery`}`,
     `💳 *Payment Mode:* Cash on Delivery (COD)`,
     `--------------------------`,
     ``,
@@ -119,7 +119,7 @@ export function createFlexibleBundleWhatsAppUrl(
     `City & Pincode: `,
     `Mobile Number: `,
     ``,
-    `Please confirm dispatch from Kota! Thank you! 🙌`
+    `Please confirm dispatch! Thank you! 🙌`
   ];
 
   const text = encodeURIComponent(lines.join('\n'));
@@ -165,7 +165,7 @@ export function createCartWhatsAppUrl(
     `City / Pincode: `,
     `Contact Phone: `,
     ``,
-    `Please verify item stock and dispatch from your Kota hub!`
+    `Please verify item stock and dispatch!`
   ];
 
   const text = encodeURIComponent(lines.join('\n'));

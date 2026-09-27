@@ -64,7 +64,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
 
           {/* Discreet brand watermark */}
           <span className="mt-1 text-[9px] uppercase tracking-widest font-heading font-medium text-neutral-400">
-            Zyle Kota
+            Zyle Store
           </span>
         </div>
       </div>

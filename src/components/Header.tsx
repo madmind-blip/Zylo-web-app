@@ -168,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={() => navigateTo('about-section')}
                     className="w-full text-left px-3 py-2 rounded-xl text-neutral-700 hover:text-black hover:bg-neutral-50 transition cursor-pointer flex items-center justify-between font-medium"
                   >
-                    <span>About Zyle & Kota Hub</span>
+                    <span>About Zyle</span>
                   </button>
 
                   <button

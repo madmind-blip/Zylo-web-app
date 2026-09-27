@@ -145,7 +145,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       Your Bag is Empty
                     </h4>
                     <p className="text-xs text-neutral-500 max-w-xs mb-6 font-body">
-                      Explore our curated streetwear combos and watches dispatched directly from Kota.
+                      Explore our curated streetwear combos and watches with fast nationwide delivery.
                     </p>
                     <button
                       onClick={() => {
@@ -245,7 +245,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <span className="text-[#1A1A1A] font-medium">₹{subtotal}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Delivery (Kota Dispatch):</span>
+                      <span>Delivery (Nationwide):</span>
                       <span>
                         {shippingFee === 0 ? (
                           <span className="text-[#4A5D45] font-semibold">FREE</span>

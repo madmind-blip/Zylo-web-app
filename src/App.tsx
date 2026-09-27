@@ -313,7 +313,7 @@ export default function App() {
 
   const handleFloatingWhatsApp = () => {
     const phone = getWhatsAppNumberClean();
-    const text = encodeURIComponent('Hi Zyle Team! 👋 I am browsing your store from Kota. I have a question about an order.');
+    const text = encodeURIComponent('Hi Zyle Team! 👋 I am browsing your store. I have a question about an order.');
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
 
@@ -363,7 +363,7 @@ export default function App() {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-1">
-                    Curated Collection • Kota Hub
+                    Curated Collection
                   </div>
                   <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#1A1A1A]">
                     {selectedCategory === 'combos'

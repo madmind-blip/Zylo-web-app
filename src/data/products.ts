@@ -19,7 +19,7 @@ export const PRODUCTS: Product[] = [
       'Set of 4 Premium Levi’s Casual Shirts',
       'Breathable, pre-shrunk cotton fabric',
       'Comfortable modern regular fit',
-      'Dispatched directly from Kota, Rajasthan',
+      'Fast express dispatch nationwide',
       'COD available with fast doorstep delivery'
     ],
     tags: ['Best seller under 1500'],
@@ -71,7 +71,7 @@ export const PRODUCTS: Product[] = [
       'Automatic skeleton aesthetic design',
       'Fluted bezel with clear exhibition caseback',
       'Adjustable stainless steel bracelet (Free Size)',
-      'Kota warehouse same-day dispatch'
+      'Fast express same-day dispatch'
     ],
     tags: ['Best seller under 1500'],
     isNewArrival: true,
@@ -95,7 +95,7 @@ export const PRODUCTS: Product[] = [
     details: [
       'Iconic luxury fluted bezel aesthetic',
       'Premium polished link band with safety clasp',
-      'Pocket price luxury direct from Kota',
+      'Pocket price luxury with fast delivery',
       'COD & Easy WhatsApp order'
     ],
     tags: ['Best seller under 1500'],
@@ -170,7 +170,7 @@ export const PRODUCTS: Product[] = [
     details: [
       'Designer sports skeleton dial with signature accents',
       'Comfortable stainless steel folding clasp',
-      'Free shipping from Kota dispatch facility',
+      'Free shipping on qualifying orders',
       'Cash on Delivery available'
     ],
     tags: ['Best seller under 1500'],
@@ -195,7 +195,7 @@ export const PRODUCTS: Product[] = [
     details: [
       'Premium Japanese inspired skeleton movement',
       'Heavy-duty hardened crystal and alloy case',
-      'Free express Kota dispatch + Free delivery',
+      'Free express dispatch + Free delivery',
       'Cash on Delivery & instant WhatsApp ordering'
     ],
     tags: ['Best seller under 2500'],
@@ -221,7 +221,7 @@ export const PRODUCTS: Product[] = [
       'Dual-tone Jubilee style luxury timepiece',
       'Sunburst dial with luminous hour indices',
       'Adjustable links fitting all wrist sizes',
-      'Ready stock in Kota hub'
+      'Ready stock with instant dispatch'
     ],
     tags: ['Best seller under 1500'],
     isNewArrival: false,
@@ -271,7 +271,7 @@ export const PRODUCTS: Product[] = [
       'Exceptional value luxury look watch under ₹800',
       'Exhibition skeleton styling with gold accents',
       'Free size strap fits all wrist dimensions',
-      'Express Kota dispatch'
+      'Express nationwide dispatch'
     ],
     tags: ['Best seller under 1200'],
     isNewArrival: true,
@@ -321,7 +321,7 @@ export const PRODUCTS: Product[] = [
       'Master luxury sports edition with skeleton view',
       'Textured sunray dial with polished baton hands',
       'Heavyweight steel construction',
-      'Direct dispatch from Kota warehouse'
+      'Direct express dispatch nationwide'
     ],
     tags: ['Best seller under 2000'],
     isNewArrival: false,

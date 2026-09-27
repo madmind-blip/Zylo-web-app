@@ -321,7 +321,7 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
     // 7. Description & Tags & Details
     const description =
       row['description'] ||
-      `${name} — curated directly from our Kota warehouse with guaranteed quality and fast doorstep delivery.`;
+      `${name} — curated with guaranteed premium quality and fast nationwide doorstep delivery.`;
 
     const rawTags = row['tags'] || '';
     const tags = rawTags
@@ -343,13 +343,13 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
         details.push('High-precision quartz mechanism & exhibition design');
         details.push('Scratch-resistant mineral crystal glass & solid steel bezel');
         details.push('Adjustable comfortable strap (Free Size)');
-        details.push('Ships from Kota with premium protective gift box');
+        details.push('Ships in premium protective gift box');
         details.push('Cash on Delivery available across India');
       } else {
         details.push('Set of premium breathable cotton clothing items');
         details.push('Pre-shrunk anti-fade color treatment');
         details.push('Modern streetwear relaxed drape');
-        details.push('Fast express dispatch from Kota, Rajasthan');
+        details.push('Fast express dispatch nationwide');
         details.push('Cash on Delivery available with fast doorstep receipt');
       }
     }
