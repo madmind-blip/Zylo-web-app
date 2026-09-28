@@ -73,10 +73,10 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200/80 transition-all w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left: Brand Logo & 3-Dot Menu Icon */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* Logo */}
           <a
             href="#"
@@ -84,17 +84,17 @@ export const Header: React.FC<HeaderProps> = ({
               e.preventDefault();
               navigateTo('home');
             }}
-            className="group flex items-baseline gap-1 select-none mr-0.5 sm:mr-1"
+            className="group flex items-baseline gap-1 select-none mr-0.5 sm:mr-1 shrink-0"
             aria-label="Zyle Homepage"
           >
-            <span className="font-heading font-extrabold text-2xl sm:text-3xl tracking-tight text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors">
+            <span className="font-heading font-extrabold text-xl sm:text-2xl md:text-3xl tracking-tight text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors">
               ZYLE
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#1A1A1A]"></span>
           </a>
 
           {/* 3-Dot Menu Icon positioned to the right of the ZYLE. logo in open space */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setIsMenuOpen((prev) => !prev)}
               className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all cursor-pointer ${
@@ -254,36 +254,38 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
         </div>
 
-        {/* Right Actions: Search icon & Cart icon (+ WhatsApp help on desktop) */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Actions: Search icon, Wishlist & Cart icon (+ WhatsApp help on desktop) */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Search Trigger */}
-          <div className="relative">
+          <div className="relative shrink-0">
             {isSearchOpen ? (
-              <div className="flex items-center bg-neutral-50 border border-neutral-200 focus-within:border-[#1A1A1A] rounded-full px-3 py-1.5 w-40 sm:w-64 transition-all">
-                <Search className="w-4 h-4 text-neutral-400 mr-2 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search catalog..."
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  autoFocus
-                  className="bg-transparent text-xs sm:text-sm text-[#1A1A1A] placeholder-neutral-400 focus:outline-none w-full"
-                />
-                <button
-                  onClick={() => {
-                    setIsSearchOpen(false);
-                    onSearchChange('');
-                  }}
-                  className="text-neutral-400 hover:text-black p-0.5 cursor-pointer"
-                  aria-label="Close search"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+              <div className="fixed sm:static inset-x-0 top-0 h-16 sm:h-auto bg-white/98 sm:bg-transparent px-4 sm:px-0 flex items-center z-50 border-b border-neutral-200 sm:border-none shadow-sm sm:shadow-none animate-in fade-in duration-150">
+                <div className="flex items-center bg-neutral-100 sm:bg-neutral-50 border border-neutral-200 focus-within:border-[#1A1A1A] rounded-full px-3 py-1.5 w-full sm:w-64 transition-all">
+                  <Search className="w-4 h-4 text-neutral-400 mr-2 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search catalog..."
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    autoFocus
+                    className="bg-transparent text-xs sm:text-sm text-[#1A1A1A] placeholder-neutral-400 focus:outline-none w-full"
+                  />
+                  <button
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      onSearchChange('');
+                    }}
+                    className="text-neutral-400 hover:text-black p-1 cursor-pointer shrink-0"
+                    aria-label="Close search"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ) : (
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black transition-all cursor-pointer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black transition-all cursor-pointer"
                 aria-label="Open search"
                 title="Search products"
               >
@@ -296,7 +298,7 @@ export const Header: React.FC<HeaderProps> = ({
           {onOpenWishlist && (
             <button
               onClick={onOpenWishlist}
-              className="relative w-10 h-10 rounded-full flex items-center justify-center bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black transition-all cursor-pointer"
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black transition-all cursor-pointer shrink-0"
               aria-label={`Wishlist with ${wishlistCount} saved items`}
               title="My Wishlist"
             >
@@ -306,7 +308,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center bg-[#E11D48] text-white text-[10px] font-mono font-bold w-4.5 h-4.5 rounded-full border-2 border-white shadow-xs">
+                <span className="absolute -top-1 -right-1 flex items-center justify-center bg-[#E11D48] text-white text-[9px] sm:text-[10px] font-mono font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full border-2 border-white shadow-xs">
                   {wishlistCount}
                 </span>
               )}
@@ -316,7 +318,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Quick WhatsApp Support (Desktop only) */}
           <button
             onClick={handleWhatsAppContact}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-700 hover:text-black text-xs font-medium transition-all cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-700 hover:text-black text-xs font-medium transition-all cursor-pointer shrink-0"
             title="Chat with Zyle Team on WhatsApp"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
@@ -326,12 +328,12 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Cart Button */}
           <button
             onClick={onOpenCart}
-            className="relative flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full bg-[#1A1A1A] text-white font-heading font-semibold text-xs sm:text-sm hover:bg-[#4A5D45] transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+            className="relative h-9 sm:h-10 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 rounded-full bg-[#1A1A1A] text-white font-heading font-semibold text-xs sm:text-sm hover:bg-[#4A5D45] transition-all duration-200 cursor-pointer shadow-xs active:scale-95 shrink-0"
             aria-label={`Shopping Cart with ${cartCount} items`}
           >
-            <ShoppingBag className="w-4 h-4" />
+            <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Bag</span>
-            <span className="flex items-center justify-center bg-white text-[#1A1A1A] text-[11px] font-mono font-bold w-4.5 h-4.5 rounded-full">
+            <span className="flex items-center justify-center bg-white text-[#1A1A1A] text-[10px] sm:text-[11px] font-mono font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full shrink-0">
               {cartCount}
             </span>
           </button>

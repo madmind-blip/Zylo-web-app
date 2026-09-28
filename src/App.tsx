@@ -278,16 +278,45 @@ export default function App() {
     showToast('Item removed from bag');
   };
 
+  const scrollToAllProducts = () => {
+    setSelectedCategory('all');
+    setSearchQuery('');
+    setSortBy('newest');
+    const el = document.getElementById('products-section');
+    if (el) {
+      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
+      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const scrollToCombos = () => {
     setSelectedCategory('combos');
     const el = document.getElementById('products-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
+      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth',
+      });
+    }
   };
 
   const scrollToWatches = () => {
     setSelectedCategory('watches');
     const el = document.getElementById('products-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) {
+      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
+      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({
+        top: Math.max(0, offsetPosition),
+        behavior: 'smooth',
+      });
+    }
   };
 
   const scrollToBuilder = () => {
@@ -384,16 +413,18 @@ export default function App() {
           <ContactFeedbackPage onBackToHome={navigateToHome} />
         ) : (
           <>
-            {/* 2. Minimal Hero */}
+            {/* 2. Scroll-Driven Interactive Hero */}
             <Hero
+              onExploreCollection={scrollToAllProducts}
               onShopCombos={scrollToCombos}
               onExploreBuilder={scrollToBuilder}
-              featuredImageUrl={products[1]?.images?.[0] || 'https://i.ibb.co/zK5ZGtF/IMG-20260924-171902-630.jpg'}
+              onSelectProduct={(p) => setActiveProduct(p)}
+              products={products}
               isIntroActive={showIntro}
             />
 
             {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
-            <div id="products-section">
+            <div id="products-section" className="scroll-mt-16 sm:scroll-mt-20">
               <CategoryChips
                 activeCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
