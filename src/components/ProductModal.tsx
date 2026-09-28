@@ -1,21 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check, Heart, Link2, Share2, ZoomIn } from 'lucide-react';
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
 import { parseProductSizes, getProductCategoryHighlights } from '../utils/csvParser';
 import { ProductImage } from './ProductImage';
 import { CheckoutModal } from './CheckoutModal';
+import { ImageViewerModal } from './ImageViewerModal';
 
 interface ProductModalProps {
   product: Product | null;
   onClose: () => void;
   onAddToCart: (product: Product, size: string, quantity: number) => void;
+  isWishlisted?: boolean;
+  onToggleWishlist?: (product: Product) => void;
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({
   product,
   onClose,
   onAddToCart,
+  isWishlisted = false,
+  onToggleWishlist,
 }) => {
   if (!product) return null;
 
@@ -24,6 +29,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [quantity, setQuantity] = useState<number>(1);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [addedToast, setAddedToast] = useState<boolean>(false);
+  const [copiedToast, setCopiedToast] = useState<boolean>(false);
+  const [isViewerOpen, setIsViewerOpen] = useState<boolean>(false);
   const [scrollY, setScrollY] = useState<number>(0);
   const [isEntranceZoom, setIsEntranceZoom] = useState<boolean>(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
@@ -81,6 +88,51 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     }, 2000);
   };
 
+  const getProductShareUrl = () => {
+    const origin = window.location.origin;
+    const pathname = window.location.pathname;
+    return `${origin}${pathname}?product=${encodeURIComponent(product.id)}`;
+  };
+
+  const handleCopyLink = async () => {
+    const url = getProductShareUrl();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopiedToast(true);
+      setTimeout(() => setCopiedToast(false), 2200);
+    } catch (err) {
+      console.error('Failed to copy URL:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = getProductShareUrl();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Zyle - ${product.name}`,
+          text: `Check out ${product.name} on Zyle!`,
+          url,
+        });
+      } catch (err) {
+        if ((err as Error)?.name !== 'AbortError') {
+          handleCopyLink();
+        }
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
+
   const imageList = product.images.length > 0 ? product.images : [''];
 
   const prevImage = () => {
@@ -105,18 +157,70 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         onScroll={handleScroll}
         className="relative z-10 w-full sm:max-w-3xl max-h-[92vh] sm:max-h-[85vh] bg-white border border-neutral-200/90 rounded-t-2xl sm:rounded-2xl shadow-xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden text-[#1A1A1A]"
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-neutral-100/90 hover:bg-neutral-200 text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
-          aria-label="Close product view"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {/* Top-Right Action Controls: Wishlist, Copy Link, Share, Close */}
+        <div className="absolute top-3.5 right-3.5 z-20 flex items-center gap-1.5 sm:gap-2">
+          {/* Wishlist Toggle Button */}
+          {onToggleWishlist && (
+            <button
+              onClick={() => onToggleWishlist(product)}
+              className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer shadow-xs border border-neutral-200/80 active:scale-90"
+              aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+              title={isWishlisted ? 'Saved in wishlist' : 'Save to wishlist'}
+            >
+              <Heart
+                className={`w-4 h-4 transition-colors ${
+                  isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-neutral-700'
+                }`}
+              />
+            </button>
+          )}
+
+          {/* Copy Link Button */}
+          <button
+            onClick={handleCopyLink}
+            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer shadow-xs border border-neutral-200/80 active:scale-90"
+            aria-label="Copy link to product"
+            title="Copy link"
+          >
+            <Link2 className="w-4 h-4" />
+          </button>
+
+          {/* Share Button (Native Sheet or Copy fallback) */}
+          <button
+            onClick={handleShare}
+            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer shadow-xs border border-neutral-200/80 active:scale-90"
+            aria-label="Share product"
+            title="Share"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-black flex items-center justify-center transition-colors cursor-pointer shadow-xs border border-neutral-200/80 active:scale-90"
+            aria-label="Close product view"
+            title="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Link Copied Floating Toast */}
+        {copiedToast && (
+          <div className="absolute top-13 right-3.5 z-30 px-3 py-1.5 rounded-full bg-[#1A1A1A] text-white text-xs font-semibold shadow-lg flex items-center gap-1.5 animate-fade-in pointer-events-none">
+            <Check className="w-3.5 h-3.5 text-[#22C55E]" />
+            <span>Link copied</span>
+          </div>
+        )}
 
         {/* Left Side: Image Gallery with Reduced Height & Parallax Depth */}
         <div className="w-full md:w-5/12 flex flex-col bg-[#FAFAFA] p-4 sm:p-5 border-b md:border-b-0 md:border-r border-neutral-200 shrink-0 justify-between">
-          <div className="relative h-56 sm:h-64 md:h-72 w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/70">
+          <div
+            onClick={() => setIsViewerOpen(true)}
+            className="relative h-56 sm:h-64 md:h-72 w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/70 cursor-zoom-in group/img"
+            title="Tap to zoom image"
+          >
             {/* Scroll-based parallax depth & entrance zoom */}
             <div
               className={`w-full h-full transition-transform ${
@@ -138,6 +242,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 isSoldOut={isSoldOut}
                 className="w-full h-full object-cover object-center"
               />
+            </div>
+
+            {/* Tap to Zoom Badge */}
+            <div className="absolute bottom-2.5 right-2.5 z-10 px-2 py-1 rounded-md bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium flex items-center gap-1 opacity-80 group-hover/img:opacity-100 transition-opacity pointer-events-none">
+              <ZoomIn className="w-3 h-3" />
+              <span>Zoom</span>
             </div>
 
             {/* High-Contrast Discount Tag */}
@@ -171,15 +281,21 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             {imageList.length > 1 && (
               <>
                 <button
-                  onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-neutral-800 flex items-center justify-center shadow-xs border border-neutral-200 transition cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-neutral-800 flex items-center justify-center shadow-xs border border-neutral-200 transition cursor-pointer"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-neutral-800 flex items-center justify-center shadow-xs border border-neutral-200 transition cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-neutral-800 flex items-center justify-center shadow-xs border border-neutral-200 transition cursor-pointer"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -395,6 +511,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         shippingFee={shippingFee}
         title="Complete Your Order"
       />
+
+      {/* Fullscreen Image Zoom Viewer */}
+      {isViewerOpen && (
+        <ImageViewerModal
+          images={imageList}
+          initialIndex={activeImageIndex}
+          productName={product.name}
+          onClose={() => setIsViewerOpen(false)}
+        />
+      )}
     </div>
   );
 };

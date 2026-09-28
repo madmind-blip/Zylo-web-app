@@ -64,7 +64,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
                 onChange={(e) => onSortChange(e.target.value)}
                 className="bg-transparent text-xs text-[#1A1A1A] focus:outline-none cursor-pointer"
               >
-                <option value="featured">Featured</option>
+                <option value="newest">Newest First</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="discount">Biggest Discount</option>

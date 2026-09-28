@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, X, MessageCircle, MoreVertical, MessageSquare } from 'lucide-react';
+import { ShoppingBag, Search, X, MessageCircle, MoreVertical, MessageSquare, Heart } from 'lucide-react';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 
 interface HeaderProps {
   cartCount: number;
   onOpenCart: () => void;
+  wishlistCount?: number;
+  onOpenWishlist?: () => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   onSelectCategory?: (category: any) => void;
@@ -16,6 +18,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   cartCount,
   onOpenCart,
+  wishlistCount = 0,
+  onOpenWishlist,
   searchQuery,
   onSearchChange,
   onSelectCategory,
@@ -287,6 +291,27 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
           </div>
+
+          {/* Wishlist Button */}
+          {onOpenWishlist && (
+            <button
+              onClick={onOpenWishlist}
+              className="relative w-10 h-10 rounded-full flex items-center justify-center bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-600 hover:text-black transition-all cursor-pointer"
+              aria-label={`Wishlist with ${wishlistCount} saved items`}
+              title="My Wishlist"
+            >
+              <Heart
+                className={`w-4 h-4 transition-colors ${
+                  wishlistCount > 0 ? 'text-[#E11D48] fill-[#E11D48]' : 'text-neutral-600'
+                }`}
+              />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center bg-[#E11D48] text-white text-[10px] font-mono font-bold w-4.5 h-4.5 rounded-full border-2 border-white shadow-xs">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Quick WhatsApp Support (Desktop only) */}
           <button

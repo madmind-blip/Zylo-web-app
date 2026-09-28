@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Heart } from 'lucide-react';
 import { Product } from '../types';
 import { ProductImage } from './ProductImage';
 
@@ -7,12 +7,16 @@ interface ProductCardProps {
   product: Product;
   onSelect: (product: Product) => void;
   onAddToCart: (product: Product, e: React.MouseEvent) => void;
+  isWishlisted?: boolean;
+  onToggleWishlist?: (product: Product) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onSelect,
   onAddToCart,
+  isWishlisted = false,
+  onToggleWishlist,
 }) => {
   const isSoldOut = product.stock === 0;
   // Urgency badge only when genuinely below 5
@@ -35,6 +39,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-103"
         />
 
+        {/* Wishlist Heart Button (Top-Right with soft background) */}
+        {onToggleWishlist && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleWishlist(product);
+            }}
+            className="absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full bg-white/85 hover:bg-white backdrop-blur-md border border-black/5 shadow-xs flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
+            aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+            title={isWishlisted ? 'Saved in wishlist' : 'Save to wishlist'}
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors ${
+                isWishlisted
+                  ? 'text-[#E11D48] fill-[#E11D48]'
+                  : 'text-neutral-700 hover:text-black'
+              }`}
+            />
+          </button>
+        )}
+
         {/* Single High-Contrast Discount Tag */}
         {hasDiscount && !isSoldOut && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
@@ -44,10 +70,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Low Stock Badge (Only if genuinely below 5) */}
+        {/* Low Stock Badge (Only if genuinely below 5, positioned bottom-left) */}
         {isLowStock && !isSoldOut && (
-          <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
-            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1A1A]/85 text-white">
+          <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#1A1A1A]/85 text-white shadow-2xs">
               Only {product.stock} left
             </span>
           </div>

@@ -495,10 +495,47 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
       isNewArrival: index < 4 || tagsLower.includes('new'),
       featured: index < 6,
       comboRole,
+      rowIndex: index,
     });
   });
 
   return products;
+}
+
+/**
+ * Comparator for sorting products with newest first:
+ * - Sorts by incrementing ID in descending order (higher ID = newer product)
+ * - If IDs are not purely numeric or are missing/equal, falls back to the row's position in the sheet (later rows = newer)
+ */
+export function compareProductsNewestFirst(a: Product, b: Product): number {
+  const cleanA = String(a.id || '').trim();
+  const cleanB = String(b.id || '').trim();
+
+  // Try extracting numeric ID values
+  const matchA = cleanA.match(/\d+(\.\d+)?/g);
+  const matchB = cleanB.match(/\d+(\.\d+)?/g);
+
+  const numA = matchA ? parseFloat(matchA.join('')) : NaN;
+  const numB = matchB ? parseFloat(matchB.join('')) : NaN;
+
+  const validA = !isNaN(numA);
+  const validB = !isNaN(numB);
+
+  // If both have valid numeric IDs and they differ, sort by ID descending (highest ID first)
+  if (validA && validB && numA !== numB) {
+    return numB - numA;
+  }
+
+  // If IDs are not purely numeric or missing/equal, fall back to row position in the sheet
+  const rowA = a.rowIndex !== undefined ? a.rowIndex : -1;
+  const rowB = b.rowIndex !== undefined ? b.rowIndex : -1;
+
+  if (rowA !== -1 && rowB !== -1 && rowA !== rowB) {
+    return rowB - rowA; // Higher row index = later row in the sheet = newer
+  }
+
+  // Fallback to numeric-aware string comparison descending
+  return cleanB.localeCompare(cleanA, undefined, { numeric: true });
 }
 
 /**

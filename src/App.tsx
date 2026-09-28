@@ -14,6 +14,7 @@ import { ComboBuilder } from './components/ComboBuilder';
 import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
+import { WishlistDrawer } from './components/WishlistDrawer';
 import { PolicyModal, PolicyType } from './components/PolicyModal';
 import { CinematicIntro } from './components/CinematicIntro';
 import { ContactFeedbackPage } from './components/ContactFeedbackPage';
@@ -22,7 +23,7 @@ import { BRAND } from './data/content';
 import { Product, CartItem } from './types';
 import { MessageCircle, Check, AlertCircle, RefreshCw } from 'lucide-react';
 import { getWhatsAppNumberClean } from './utils/whatsapp';
-import { fetchProductsFromSheetUrl, PUBLISHED_SHEET_CSV_URL, parseProductSizes } from './utils/csvParser';
+import { fetchProductsFromSheetUrl, PUBLISHED_SHEET_CSV_URL, parseProductSizes, compareProductsNewestFirst } from './utils/csvParser';
 
 export default function App() {
   // First-visit cinematic entry screen (React state only, not localStorage)
@@ -59,9 +60,11 @@ export default function App() {
   // Navigation & Filter State
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('featured');
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState<boolean>(false);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
   const [activePolicy, setActivePolicy] = useState<PolicyType>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -73,6 +76,46 @@ export default function App() {
     setTimeout(() => {
       setToastMessage(null);
     }, 2800);
+  };
+
+  // Toggle product in or out of wishlist (React state only)
+  const handleToggleWishlist = (product: Product) => {
+    setWishlist((prev) => {
+      const exists = prev.some((p) => p.id === product.id);
+      if (exists) {
+        showToast('Removed from wishlist');
+        return prev.filter((p) => p.id !== product.id);
+      } else {
+        showToast('Saved to wishlist');
+        return [product, ...prev];
+      }
+    });
+  };
+
+  // Auto-open product detail popup if URL contains ?product=ID
+  useEffect(() => {
+    if (products.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('product');
+    if (productId) {
+      const matched = products.find(
+        (p) => String(p.id).trim().toLowerCase() === productId.trim().toLowerCase()
+      );
+      if (matched) {
+        setActiveProduct(matched);
+      }
+    }
+  }, [products]);
+
+  // Clean close for product detail popup
+  const handleCloseProductModal = () => {
+    setActiveProduct(null);
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('product')) {
+      params.delete('product');
+      const newQuery = params.toString() ? `?${params.toString()}` : '';
+      window.history.replaceState(null, '', `${window.location.pathname}${newQuery}`);
+    }
   };
 
   // Filter & Sort Logic
@@ -134,8 +177,8 @@ export default function App() {
     } else if (sortBy === 'discount') {
       list.sort((a, b) => b.discountPercent - a.discountPercent);
     } else {
-      // featured default
-      list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      // Default: "Newest First" (higher ID = newer, falls back to sheet row position)
+      list.sort(compareProductsNewestFirst);
     }
 
     return list;
@@ -326,6 +369,8 @@ export default function App() {
       <Header
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
+        wishlistCount={wishlist.length}
+        onOpenWishlist={() => setIsWishlistOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSelectCategory={setSelectedCategory}
@@ -460,6 +505,8 @@ export default function App() {
                         e.stopPropagation();
                         handleAddToCart(p);
                       }}
+                      isWishlisted={wishlist.some((item) => item.id === product.id)}
+                      onToggleWishlist={handleToggleWishlist}
                     />
                   ))}
                 </div>
@@ -491,10 +538,12 @@ export default function App() {
       {/* 5. Product Detail Popup Modal */}
       <ProductModal
         product={activeProduct}
-        onClose={() => setActiveProduct(null)}
+        onClose={handleCloseProductModal}
         onAddToCart={(product, size, qty) => {
           handleAddToCart(product, size, qty);
         }}
+        isWishlisted={activeProduct ? wishlist.some((item) => item.id === activeProduct.id) : false}
+        onToggleWishlist={handleToggleWishlist}
       />
 
       {/* Cart Drawer */}
@@ -505,6 +554,19 @@ export default function App() {
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveCartItem}
         onShopCombos={scrollToCombos}
+      />
+
+      {/* Wishlist Drawer */}
+      <WishlistDrawer
+        isOpen={isWishlistOpen}
+        onClose={() => setIsWishlistOpen(false)}
+        wishlist={wishlist}
+        onRemoveFromWishlist={(product) => handleToggleWishlist(product)}
+        onAddToCart={(product) => {
+          handleAddToCart(product);
+          showToast(`Added ${product.name} to Bag`);
+        }}
+        onSelectProduct={(product) => setActiveProduct(product)}
       />
 
       {/* Policy Modal */}

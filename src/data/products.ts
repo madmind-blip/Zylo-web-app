@@ -1,6 +1,6 @@
 import { Product } from '../types';
 
-export const PRODUCTS: Product[] = [
+const RAW_PRODUCTS: Product[] = [
   {
     id: '1',
     name: "Levi's shirts",
@@ -329,3 +329,8 @@ export const PRODUCTS: Product[] = [
     comboRole: 'watch',
   },
 ];
+
+export const PRODUCTS: Product[] = RAW_PRODUCTS.map((item, index) => ({
+  ...item,
+  rowIndex: index,
+}));

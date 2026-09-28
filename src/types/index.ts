@@ -20,6 +20,7 @@ export interface Product {
   isNewArrival?: boolean;
   featured?: boolean;
   comboRole?: 'top' | 'bottom' | 'watch'; // for combo builder
+  rowIndex?: number; // 0-based row order from Google Sheet
 }
 
 export interface CartItem {
