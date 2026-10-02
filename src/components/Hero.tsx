@@ -4,8 +4,7 @@ import { Product } from '../types';
 import { PRODUCTS } from '../data/products';
 
 interface HeroProps {
-  onExploreCollection?: () => void;
-  onShopCombos?: () => void;
+  onShopCombos: () => void;
   onExploreBuilder?: () => void;
   onSelectProduct?: (product: Product) => void;
   products?: Product[];
@@ -13,7 +12,6 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({
-  onExploreCollection,
   onShopCombos,
   onSelectProduct,
   products = [],
@@ -113,8 +111,6 @@ export const Hero: React.FC<HeroProps> = ({
     window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
   };
 
-  const handleExplore = onExploreCollection || onShopCombos;
-
   // Static fallback if user prefers reduced motion
   if (prefersReducedMotion) {
     return (
@@ -127,7 +123,7 @@ export const Hero: React.FC<HeroProps> = ({
             Curated streetwear combo clothes and high-finish watches engineered for effortless style. Fast dispatch with Cash on Delivery, nationwide.
           </p>
           <button
-            onClick={handleExplore}
+            onClick={onShopCombos}
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-sm transition-colors shadow-xs cursor-pointer"
           >
             <span>Explore Collection</span>
@@ -341,19 +337,9 @@ export const Hero: React.FC<HeroProps> = ({
               ))}
             </h1>
 
-            <p className="font-body text-neutral-600 text-xs sm:text-sm md:text-base max-w-lg mx-auto font-normal leading-relaxed mb-3 sm:mb-4 px-4">
+            <p className="font-body text-neutral-600 text-xs sm:text-sm md:text-base max-w-lg mx-auto font-normal leading-relaxed mb-4 sm:mb-6 px-4">
               Hand-picked matching sets with bundle savings up to 40% OFF. Ready to wear.
             </p>
-
-            {onShopCombos && (
-              <button
-                onClick={onShopCombos}
-                className="mb-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-100 text-[#1A1A1A] border border-neutral-200/90 text-xs font-semibold cursor-pointer shadow-2xs transition-colors active:scale-95"
-              >
-                <span>Browse All Combos</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
 
             {/* Floating Live Combo Images (2 to 3) */}
             <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 pt-1 max-w-full overflow-hidden">
@@ -420,7 +406,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="w-full flex flex-col items-center justify-center gap-3 pb-1 sm:pb-2 z-20">
           {/* Explore Collection Button (Visible & Tappable Throughout All 3 Stages) */}
           <button
-            onClick={handleExplore}
+            onClick={onShopCombos}
             className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer active:scale-98"
           >
             <span>Explore Collection</span>

@@ -278,45 +278,16 @@ export default function App() {
     showToast('Item removed from bag');
   };
 
-  const scrollToAllProducts = () => {
-    setSelectedCategory('all');
-    setSearchQuery('');
-    setSortBy('newest');
-    const el = document.getElementById('products-section');
-    if (el) {
-      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
-      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.scrollTo({
-        top: Math.max(0, offsetPosition),
-        behavior: 'smooth',
-      });
-    }
-  };
-
   const scrollToCombos = () => {
     setSelectedCategory('combos');
     const el = document.getElementById('products-section');
-    if (el) {
-      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
-      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.scrollTo({
-        top: Math.max(0, offsetPosition),
-        behavior: 'smooth',
-      });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToWatches = () => {
     setSelectedCategory('watches');
     const el = document.getElementById('products-section');
-    if (el) {
-      const headerOffset = window.innerWidth >= 640 ? 80 : 64;
-      const offsetPosition = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.scrollTo({
-        top: Math.max(0, offsetPosition),
-        behavior: 'smooth',
-      });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const scrollToBuilder = () => {
@@ -415,7 +386,6 @@ export default function App() {
           <>
             {/* 2. Scroll-Driven Interactive Hero */}
             <Hero
-              onExploreCollection={scrollToAllProducts}
               onShopCombos={scrollToCombos}
               onExploreBuilder={scrollToBuilder}
               onSelectProduct={(p) => setActiveProduct(p)}
@@ -424,7 +394,7 @@ export default function App() {
             />
 
             {/* 3. Category & Filter Chips: All, Combos, Watches, Under ₹1500, Under ₹2000, Under ₹2500 */}
-            <div id="products-section" className="scroll-mt-16 sm:scroll-mt-20">
+            <div id="products-section">
               <CategoryChips
                 activeCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
