@@ -102,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Product Name in Syne (UPPERCASE) */}
           <h3
-            className="font-heading font-bold text-xs sm:text-[13px] text-[#1A1A1A] group-hover:text-[#4A5D45] transition-colors line-clamp-2 leading-tight sm:leading-snug mb-2 uppercase tracking-tight min-h-[2.1rem] sm:min-h-[2.4rem]"
+            className="font-heading font-bold text-xs sm:text-[13px] text-[#1A1A1A] group-hover:text-[#EA580C] transition-colors line-clamp-2 leading-tight sm:leading-snug mb-2 uppercase tracking-tight min-h-[2.1rem] sm:min-h-[2.4rem]"
             title={product.name.toUpperCase()}
           >
             {product.name.toUpperCase()}
@@ -133,7 +133,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               onClick={(e) => onAddToCart(product, e)}
-              className="w-full py-2.5 px-3 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 shadow-sm"
+              className="w-full py-2.5 px-3 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white font-heading font-semibold text-xs sm:text-sm transition-colors duration-200 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 shadow-sm"
               aria-label={`Add ${product.name} to Cart`}
             >
               <ShoppingBag className="w-3.5 h-3.5" />

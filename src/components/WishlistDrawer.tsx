@@ -89,7 +89,7 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({
                 </div>
                 <button
                   onClick={onClose}
-                  className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold font-heading transition-colors cursor-pointer shadow-sm"
+                  className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold font-heading transition-colors cursor-pointer shadow-sm"
                 >
                   <span>Explore Catalog</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({
                                 onSelectProduct(product);
                                 onClose();
                               }}
-                              className="text-left font-heading font-bold text-xs sm:text-sm text-[#1A1A1A] hover:text-[#4A5D45] truncate transition-colors cursor-pointer"
+                              className="text-left font-heading font-bold text-xs sm:text-sm text-[#1A1A1A] hover:text-[#EA580C] truncate transition-colors cursor-pointer"
                             >
                               {product.name}
                             </button>
@@ -179,7 +179,7 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({
                               onClick={() => {
                                 onAddToCart(product);
                               }}
-                              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold font-heading transition-colors cursor-pointer active:scale-95 shadow-xs"
+                              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold font-heading transition-colors cursor-pointer active:scale-95 shadow-xs"
                             >
                               <ShoppingBag className="w-3.5 h-3.5" />
                               <span>Add to Bag</span>

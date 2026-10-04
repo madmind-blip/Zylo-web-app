@@ -90,7 +90,7 @@ export const FAQSection: React.FC = () => {
 
           <button
             onClick={handleAskWhatsApp}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-colors shrink-0 cursor-pointer active:scale-98 shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white font-heading font-semibold text-xs sm:text-sm transition-colors shrink-0 cursor-pointer active:scale-98 shadow-xs"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Chat on WhatsApp</span>

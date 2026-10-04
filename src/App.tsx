@@ -71,6 +71,33 @@ export default function App() {
   // Cart State (clean, empty by default)
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  // Recently Viewed products tracking (persisted in localStorage)
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>(() => {
+    try {
+      const saved = localStorage.getItem('zyle_recently_viewed');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleSelectProduct = (product: Product) => {
+    setActiveProduct(product);
+    setRecentlyViewed((prev) => {
+      const updated = [product, ...prev.filter((p) => p.id !== product.id)].slice(0, 10);
+      try {
+        localStorage.setItem('zyle_recently_viewed', JSON.stringify(updated));
+      } catch {
+        // ignore storage errors
+      }
+      return updated;
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    params.set('product', String(product.id));
+    window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
@@ -102,7 +129,7 @@ export default function App() {
         (p) => String(p.id).trim().toLowerCase() === productId.trim().toLowerCase()
       );
       if (matched) {
-        setActiveProduct(matched);
+        handleSelectProduct(matched);
       }
     }
   }, [products]);
@@ -388,7 +415,7 @@ export default function App() {
             <Hero
               onShopCombos={scrollToCombos}
               onExploreBuilder={scrollToBuilder}
-              onSelectProduct={(p) => setActiveProduct(p)}
+              onSelectProduct={(p) => handleSelectProduct(p)}
               products={products}
               isIntroActive={showIntro}
             />
@@ -458,7 +485,7 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <button
                       onClick={() => loadProducts()}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Try Again</span>
@@ -490,7 +517,7 @@ export default function App() {
                       setSearchQuery('');
                       setSelectedCategory('all');
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold transition-colors cursor-pointer"
                   >
                     View All Products
                   </button>
@@ -501,7 +528,7 @@ export default function App() {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onSelect={(p) => setActiveProduct(p)}
+                      onSelect={(p) => handleSelectProduct(p)}
                       onAddToCart={(p, e) => {
                         e.stopPropagation();
                         handleAddToCart(p);
@@ -536,7 +563,7 @@ export default function App() {
         onNavigateContact={navigateToContact}
       />
 
-      {/* 5. Product Detail Popup Modal */}
+      {/* 5. Product Detail Popup Modal with Recently Viewed Carousel */}
       <ProductModal
         product={activeProduct}
         onClose={handleCloseProductModal}
@@ -545,6 +572,9 @@ export default function App() {
         }}
         isWishlisted={activeProduct ? wishlist.some((item) => item.id === activeProduct.id) : false}
         onToggleWishlist={handleToggleWishlist}
+        recentlyViewed={recentlyViewed}
+        allProducts={products}
+        onSelectProduct={handleSelectProduct}
       />
 
       {/* Cart Drawer */}
@@ -567,7 +597,7 @@ export default function App() {
           handleAddToCart(product);
           showToast(`Added ${product.name} to Bag`);
         }}
-        onSelectProduct={(product) => setActiveProduct(product)}
+        onSelectProduct={(product) => handleSelectProduct(product)}
       />
 
       {/* Policy Modal */}
@@ -579,7 +609,7 @@ export default function App() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-[#1A1A1A] border border-neutral-700 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-medium">
-          <Check className="w-3.5 h-3.5 text-[#4A5D45]" />
+          <Check className="w-3.5 h-3.5 text-[#EA580C]" />
           <span>{toastMessage}</span>
         </div>
       )}

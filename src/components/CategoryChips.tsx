@@ -39,10 +39,10 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
                 <button
                   key={chip.id}
                   onClick={() => onSelectCategory(chip.id)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors cursor-pointer ${
+                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#1A1A1A] text-white font-semibold shadow-xs'
-                      : 'bg-white text-neutral-600 hover:text-black border border-neutral-200 hover:border-neutral-300'
+                      ? 'bg-[#EA580C] text-white font-semibold shadow-xs border border-[#EA580C]'
+                      : 'bg-white text-neutral-600 hover:text-black border border-neutral-200 hover:border-[#EA580C]/50'
                   }`}
                 >
                   {chip.label}

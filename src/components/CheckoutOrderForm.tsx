@@ -216,7 +216,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
         {shippingFee !== undefined && subtotal !== undefined && (
           <div className="mt-2 pt-2 border-t border-neutral-200/60 flex justify-between text-[11px] text-neutral-500 font-mono">
             <span>Delivery (Nationwide):</span>
-            <span className={shippingFee === 0 ? 'text-[#4A5D45] font-semibold' : ''}>
+            <span className={shippingFee === 0 ? 'text-[#EA580C] font-semibold' : ''}>
               {shippingFee === 0 ? 'FREE (Above ₹999)' : `₹${shippingFee}`}
             </span>
           </div>
@@ -482,7 +482,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
           disabled={!isFormValid || !isPincodeVerified || isVerifyingPincode}
           className={`w-full py-3.5 px-4 rounded-xl font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
             isFormValid && isPincodeVerified && !isVerifyingPincode
-              ? 'bg-[#1A1A1A] hover:bg-[#4A5D45] text-white shadow-sm cursor-pointer active:scale-98'
+              ? 'bg-[#EA580C] hover:bg-[#C2410C] text-white shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 cursor-pointer active:scale-98'
               : 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
           }`}
         >
@@ -491,7 +491,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
         </button>
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500 mt-2 text-center">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#4A5D45] shrink-0" />
+          <ShieldCheck className="w-3.5 h-3.5 text-[#EA580C] shrink-0" />
           <span>Fast nationwide delivery • 7-day easy size exchange</span>
         </div>
       </div>

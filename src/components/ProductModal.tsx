@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MessageCircle, ShoppingBag, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight, Check, Heart, Link2, Share2, ZoomIn } from 'lucide-react';
+import {
+  X,
+  MessageCircle,
+  ShoppingBag,
+  ShieldCheck,
+  Truck,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Heart,
+  Link2,
+  Share2,
+  ZoomIn,
+  Clock,
+  ArrowRight,
+} from 'lucide-react';
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
 import { parseProductSizes, getProductCategoryHighlights } from '../utils/csvParser';
@@ -13,6 +29,9 @@ interface ProductModalProps {
   onAddToCart: (product: Product, size: string, quantity: number) => void;
   isWishlisted?: boolean;
   onToggleWishlist?: (product: Product) => void;
+  recentlyViewed?: Product[];
+  allProducts?: Product[];
+  onSelectProduct?: (product: Product) => void;
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({
@@ -21,6 +40,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onAddToCart,
   isWishlisted = false,
   onToggleWishlist,
+  recentlyViewed = [],
+  allProducts = [],
+  onSelectProduct,
 }) => {
   if (!product) return null;
 
@@ -35,6 +57,24 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [isEntranceZoom, setIsEntranceZoom] = useState<boolean>(true);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
 
+  const modalContainerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Compute the last 3 products clicked by the user (excluding active product)
+  const clickedRecent = (recentlyViewed || []).filter((p) => p.id !== product.id);
+  const fallbackRecent = (allProducts || []).filter((p) => p.id !== product.id).slice(0, 3);
+  const carouselProducts = clickedRecent.length > 0 ? clickedRecent.slice(0, 3) : fallbackRecent;
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = 220;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   useEffect(() => {
     if (product) {
       const parsed = parseProductSizes(product.sizes);
@@ -44,6 +84,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setAddedToast(false);
       setScrollY(0);
       setIsEntranceZoom(true);
+
+      if (modalContainerRef.current) {
+        modalContainerRef.current.scrollTop = 0;
+      }
 
       // Initial cinematic entrance scale relaxation
       const timer = setTimeout(() => {
@@ -154,8 +198,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
       {/* Modal Card */}
       <div
+        ref={modalContainerRef}
         onScroll={handleScroll}
-        className="relative z-10 w-full sm:max-w-3xl max-h-[92vh] sm:max-h-[85vh] bg-white border border-neutral-200/90 rounded-t-2xl sm:rounded-2xl shadow-xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden text-[#1A1A1A]"
+        className="relative z-10 w-full sm:max-w-4xl max-h-[94vh] sm:max-h-[90vh] bg-white border border-neutral-200/90 rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-y-auto text-[#1A1A1A]"
       >
         {/* Top-Right Action Controls: Wishlist, Copy Link, Share, Close */}
         <div className="absolute top-3.5 right-3.5 z-20 flex items-center gap-1.5 sm:gap-2">
@@ -214,8 +259,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           </div>
         )}
 
-        {/* Left Side: Image Gallery with Reduced Height & Parallax Depth */}
-        <div className="w-full md:w-5/12 flex flex-col bg-[#FAFAFA] p-4 sm:p-5 border-b md:border-b-0 md:border-r border-neutral-200 shrink-0 justify-between">
+        {/* Main Product Layout (2 columns on md+) */}
+        <div className="flex flex-col md:flex-row">
+          {/* Left Side: Image Gallery with Reduced Height & Parallax Depth */}
+          <div className="w-full md:w-5/12 flex flex-col bg-[#FAFAFA] p-4 sm:p-5 border-b md:border-b-0 md:border-r border-neutral-200 shrink-0 justify-between">
           <div
             onClick={() => setIsViewerOpen(true)}
             className="relative h-56 sm:h-64 md:h-72 w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/70 cursor-zoom-in group/img"
@@ -389,7 +436,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                         onClick={() => setSelectedSize(size)}
                         className={`min-w-[44px] h-10 px-3.5 rounded-xl text-xs font-heading font-bold transition-all duration-150 cursor-pointer flex items-center justify-center ${
                           isSelected
-                            ? 'bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] shadow-xs scale-102 ring-2 ring-[#4A5D45]/30'
+                            ? 'bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] shadow-xs scale-102 ring-2 ring-[#EA580C]/40'
                             : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-400 hover:text-black'
                         }`}
                         aria-pressed={isSelected}
@@ -440,7 +487,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <ul className="space-y-1.5 text-xs text-neutral-600 font-body">
                   {highlights.map((detail, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-[#4A5D45] shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-[#EA580C] shrink-0" />
                       <span>{detail}</span>
                     </li>
                   ))}
@@ -459,7 +506,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               <>
                 <button
                   onClick={handleOrderOnWhatsApp}
-                  className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-98 shadow-sm"
+                  className="w-full py-3 px-4 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 cursor-pointer active:scale-98"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Order on WhatsApp (Instant)</span>
@@ -493,6 +540,116 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Recently Viewed Products Horizontal Carousel */}
+      {carouselProducts.length > 0 && (
+        <section
+          aria-label="Recently viewed products"
+          className="border-t border-neutral-200/80 bg-neutral-50/80 p-4 sm:p-5"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[#EA580C]" />
+              <h3 className="font-heading font-bold text-xs sm:text-sm text-[#1A1A1A] uppercase tracking-wider">
+                Recently Viewed
+              </h3>
+              <span className="text-[11px] text-neutral-400 font-mono">
+                ({carouselProducts.length})
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => scrollCarousel('left')}
+                className="w-7 h-7 rounded-full bg-white border border-neutral-200 hover:border-[#EA580C]/50 hover:text-[#EA580C] text-neutral-600 flex items-center justify-center transition cursor-pointer shadow-2xs"
+                aria-label="Previous recently viewed product"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => scrollCarousel('right')}
+                className="w-7 h-7 rounded-full bg-white border border-neutral-200 hover:border-[#EA580C]/50 hover:text-[#EA580C] text-neutral-600 flex items-center justify-center transition cursor-pointer shadow-2xs"
+                aria-label="Next recently viewed product"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Horizontal Carousel */}
+          <div
+            ref={carouselRef}
+            className="flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory scrollbar-none"
+          >
+            {carouselProducts.map((recentItem) => (
+              <div
+                key={recentItem.id}
+                onClick={() => {
+                  if (onSelectProduct) {
+                    onSelectProduct(recentItem);
+                  }
+                }}
+                className="min-w-[170px] sm:min-w-[200px] max-w-[210px] bg-white border border-neutral-200/90 hover:border-[#EA580C] rounded-xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer group snap-start shrink-0 flex flex-col justify-between"
+                title={`View ${recentItem.name}`}
+              >
+                {/* Thumbnail Image */}
+                <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-neutral-100 mb-2">
+                  <ProductImage
+                    src={recentItem.images[0]}
+                    alt={recentItem.name}
+                    productName={recentItem.name}
+                    category={recentItem.category}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {recentItem.originalPrice > recentItem.price && (
+                    <span className="absolute top-1.5 left-1.5 bg-[#EA580C] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs">
+                      {Math.round(
+                        ((recentItem.originalPrice - recentItem.price) /
+                          recentItem.originalPrice) *
+                          100
+                      )}
+                      % OFF
+                    </span>
+                  )}
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] text-neutral-400 uppercase tracking-wider block font-medium truncate mb-0.5">
+                      {recentItem.categoryGroup === 'combos'
+                        ? 'Combo'
+                        : recentItem.categoryGroup === 'watches'
+                        ? 'Watch'
+                        : recentItem.category}
+                    </span>
+                    <h4 className="font-heading font-bold text-xs text-[#1A1A1A] group-hover:text-[#EA580C] transition-colors line-clamp-1 uppercase">
+                      {recentItem.name}
+                    </h4>
+                  </div>
+
+                  <div className="flex items-baseline gap-1.5 mt-1.5">
+                    <span className="font-heading font-bold text-xs sm:text-sm text-[#1A1A1A]">
+                      ₹{recentItem.price}
+                    </span>
+                    {recentItem.originalPrice > recentItem.price && (
+                      <span className="text-[10px] text-neutral-400 line-through">
+                        ₹{recentItem.originalPrice}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Navigate back CTA */}
+                <div className="mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-between text-[11px] text-[#EA580C] font-semibold group-hover:text-[#C2410C]">
+                  <span>View Piece</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
 
       {/* Instant Checkout Order Modal */}
       <CheckoutModal

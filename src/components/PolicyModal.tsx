@@ -31,7 +31,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
               Shipping & Delivery Policy
             </h3>
-            <p className="text-xs text-[#4A5D45] font-semibold mb-4">
+            <p className="text-xs text-[#EA580C] font-semibold mb-4">
               Fast express dispatch nationwide
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
@@ -59,7 +59,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
               7-Day Return & Exchange Policy
             </h3>
-            <p className="text-xs text-[#4A5D45] font-semibold mb-4">
+            <p className="text-xs text-[#EA580C] font-semibold mb-4">
               Hassle-Free Size Swaps & Quality Guarantee
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
@@ -84,7 +84,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
               Cash on Delivery (COD) Terms
             </h3>
-            <p className="text-xs text-[#4A5D45] font-semibold mb-4">
+            <p className="text-xs text-[#EA580C] font-semibold mb-4">
               Zero Prepaid Risk for Indian Shoppers
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
@@ -109,7 +109,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
               Size & Fit Guide
             </h3>
-            <p className="text-xs text-[#4A5D45] font-semibold mb-4">
+            <p className="text-xs text-[#EA580C] font-semibold mb-4">
               Oversized Drops & Universal Watch Straps
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
@@ -156,7 +156,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
         <div className="mt-6 pt-4 border-t border-neutral-100 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs transition cursor-pointer"
+            className="px-5 py-2 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white font-heading font-semibold text-xs transition cursor-pointer"
           >
             Understood
           </button>

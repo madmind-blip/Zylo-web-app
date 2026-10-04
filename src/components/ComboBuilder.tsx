@@ -211,8 +211,8 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
 
           <p className="font-body text-neutral-600 text-sm sm:text-base leading-relaxed">
             Select <strong className="text-[#1A1A1A]">any 3 pieces</strong> across our entire catalog for{' '}
-            <span className="text-[#4A5D45] font-semibold">10% OFF</span>. Select 4 or more pieces for{' '}
-            <span className="text-[#4A5D45] font-semibold">15% OFF</span>.
+            <span className="text-[#EA580C] font-semibold">10% OFF</span>. Select 4 or more pieces for{' '}
+            <span className="text-[#EA580C] font-semibold">15% OFF</span>.
           </p>
         </div>
 
@@ -289,7 +289,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                       setActiveCategory('all');
                       setSearchQuery('');
                     }}
-                    className="text-[#1A1A1A] underline font-medium hover:text-[#4A5D45] cursor-pointer"
+                    className="text-[#1A1A1A] underline font-medium hover:text-[#EA580C] cursor-pointer"
                   >
                     View All Items
                   </button>
@@ -333,7 +333,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                           <div className="text-[10px] text-neutral-400 uppercase font-medium truncate mb-0.5">
                             {product.category}
                           </div>
-                          <div className="text-xs font-heading font-semibold text-[#1A1A1A] line-clamp-1 mb-1 group-hover:text-[#4A5D45] transition-colors">
+                          <div className="text-xs font-heading font-semibold text-[#1A1A1A] line-clamp-1 mb-1 group-hover:text-[#EA580C] transition-colors">
                             {product.name}
                           </div>
                         </div>
@@ -411,7 +411,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                 <div
                   className={`px-2.5 py-1 rounded-md text-xs font-semibold ${
                     discountPercent > 0
-                      ? 'bg-[#4A5D45]/10 text-[#4A5D45]'
+                      ? 'bg-[#EA580C]/15 text-[#EA580C]'
                       : 'bg-neutral-100 text-neutral-600'
                   }`}
                 >
@@ -435,7 +435,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                 </div>
                 <div className="w-full bg-neutral-200 h-1.5 rounded-full overflow-hidden flex">
                   <div
-                    className={`h-full transition-all duration-300 bg-[#4A5D45] ${
+                    className={`h-full transition-all duration-300 bg-[#EA580C] ${
                       itemCount >= 4
                         ? 'w-full'
                         : itemCount === 3
@@ -517,7 +517,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
 
                 <div
                   className={`flex justify-between font-medium ${
-                    discountPercent > 0 ? 'text-[#4A5D45]' : 'text-neutral-400'
+                    discountPercent > 0 ? 'text-[#EA580C]' : 'text-neutral-400'
                   }`}
                 >
                   <span>Bundle Discount ({discountPercent}% OFF):</span>
@@ -526,7 +526,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
 
                 <div className="flex justify-between text-neutral-600">
                   <span>Shipping:</span>
-                  <span className={isFreeDelivery ? 'text-[#4A5D45] font-semibold' : 'text-neutral-600'}>
+                  <span className={isFreeDelivery ? 'text-[#EA580C] font-semibold' : 'text-neutral-600'}>
                     {itemCount === 0
                       ? 'Calculated on order'
                       : isFreeDelivery
@@ -539,7 +539,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                   <div>
                     <span className="font-heading font-bold text-sm sm:text-base text-[#1A1A1A]">Bundle Price:</span>
                     {discountAmount > 0 && (
-                      <div className="text-[11px] text-[#4A5D45] font-medium">
+                      <div className="text-[11px] text-[#EA580C] font-medium">
                         You save ₹{discountAmount}
                       </div>
                     )}
@@ -560,7 +560,7 @@ export const ComboBuilder: React.FC<ComboBuilderProps> = ({ products, onAddCombo
                 <button
                   onClick={handleOrderWhatsApp}
                   disabled={itemCount === 0}
-                  className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] disabled:opacity-40 disabled:cursor-not-allowed text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs active:scale-98 cursor-pointer"
+                  className="w-full py-3 px-4 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] disabled:opacity-40 disabled:cursor-not-allowed text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 active:scale-98 cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Order Combo on WhatsApp</span>

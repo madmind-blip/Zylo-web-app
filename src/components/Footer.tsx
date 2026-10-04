@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
 
           <button
             onClick={handleWhatsApp}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm transition-colors cursor-pointer active:scale-98 shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white font-heading font-semibold text-xs sm:text-sm transition-colors cursor-pointer active:scale-98 shadow-xs"
           >
             <MessageCircle className="w-4 h-4" />
             <span>Chat +91 7073765833</span>
@@ -105,7 +105,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
                 </a>
               </li>
               <li>
-                <a href="#combo-builder" className="hover:text-[#4A5D45] transition-colors font-medium">
+                <a href="#combo-builder" className="hover:text-[#EA580C] transition-colors font-medium">
                   Custom Bundle Builder
                 </a>
               </li>
@@ -202,7 +202,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
             </div>
 
             <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200 text-xs">
-              <span className="text-[#4A5D45] font-semibold">● Operating Hours:</span> 10:00 AM – 9:00 PM (Mon–Sun)
+              <span className="text-[#EA580C] font-semibold">● Operating Hours:</span> 10:00 AM – 9:00 PM (Mon–Sun)
             </div>
           </div>
         </div>

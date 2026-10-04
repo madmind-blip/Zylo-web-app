@@ -161,7 +161,7 @@ export const ContactFeedbackPage: React.FC<ContactFeedbackPageProps> = ({ onBack
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-3.5 px-6 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-sm transition-all duration-200 shadow-xs cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-6 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white font-heading font-semibold text-sm transition-all duration-200 shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 cursor-pointer active:scale-98 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 <span>Send Feedback</span>

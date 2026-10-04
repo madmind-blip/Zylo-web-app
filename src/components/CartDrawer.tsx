@@ -111,9 +111,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="bg-[#FAFAFA] px-4 sm:px-6 py-3 border-b border-neutral-200">
                 <div className="flex items-center justify-between text-xs mb-1.5 font-medium">
                   <span className="flex items-center gap-1.5 text-neutral-700">
-                    <Truck className="w-4 h-4 text-[#4A5D45]" />
+                    <Truck className="w-4 h-4 text-[#EA580C]" />
                     {isFreeDelivery ? (
-                      <span className="text-[#4A5D45] font-semibold">
+                      <span className="text-[#EA580C] font-semibold">
                         Free Delivery unlocked (Orders &gt; ₹999)
                       </span>
                     ) : (
@@ -128,7 +128,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
                 <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#4A5D45] transition-all duration-300"
+                    className="h-full bg-[#EA580C] transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -152,7 +152,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         onClose();
                         onShopCombos();
                       }}
-                      className="px-6 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs transition cursor-pointer"
+                      className="px-6 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#F59E0B] hover:text-neutral-950 text-white font-heading font-semibold text-xs transition cursor-pointer"
                     >
                       Browse Collection
                     </button>
@@ -193,7 +193,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           {/* Custom Combo breakdown if applicable */}
                           {item.isCustomCombo && item.comboItems ? (
                             <div className="text-[10px] text-neutral-500 mt-0.5 space-y-0.5">
-                              <div className="text-[#4A5D45] font-semibold">Custom Bundle Selection:</div>
+                              <div className="text-[#EA580C] font-semibold">Custom Bundle Selection:</div>
                               <div className="truncate">• Top: {item.comboItems.top.name} ({item.comboItems.top.size})</div>
                               <div className="truncate">• Bottom: {item.comboItems.bottom.name} ({item.comboItems.bottom.size})</div>
                               <div className="truncate">• Watch: {item.comboItems.watch.name}</div>
@@ -248,7 +248,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <span>Delivery (Nationwide):</span>
                       <span>
                         {shippingFee === 0 ? (
-                          <span className="text-[#4A5D45] font-semibold">FREE</span>
+                          <span className="text-[#EA580C] font-semibold">FREE</span>
                         ) : (
                           `₹${shippingFee}`
                         )}
@@ -263,7 +263,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   {/* Proceed to Form Button */}
                   <button
                     onClick={() => setViewMode('checkout')}
-                    className="w-full py-3.5 px-4 rounded-xl bg-[#1A1A1A] hover:bg-[#4A5D45] text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors active:scale-98 cursor-pointer shadow-sm"
+                    className="w-full py-3.5 px-4 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white font-heading font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 active:scale-98 cursor-pointer"
                   >
                     <span>Proceed to Checkout</span>
                     <ArrowRight className="w-4 h-4" />

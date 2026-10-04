@@ -5,8 +5,8 @@
   --font-body: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
   --color-charcoal: #1A1A1A;
-  --color-accent: #4A5D45;
-  --color-accent-hover: #3B4B37;
+  --color-accent: #EA580C;
+  --color-accent-hover: #C2410C;
   --color-surface-bg: #FAFAFA;
   --color-surface-card: #FFFFFF;
   --color-surface-card-hover: #F5F5F5;
@@ -175,4 +175,31 @@ body {
 .animate-tagline-fade {
   animation: taglineFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
+}
+
+/* Subtle Ambient Amber Shimmer Looping Animation */
+@keyframes ambientAmberShimmer {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(-48%, -52%) scale(1.1) rotate(3deg);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(-52%, -48%) scale(0.96) rotate(-3deg);
+    opacity: 0.55;
+  }
+}
+
+.animate-amber-ambient {
+  animation: ambientAmberShimmer 12s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-amber-ambient {
+    animation: none !important;
+  }
 }
