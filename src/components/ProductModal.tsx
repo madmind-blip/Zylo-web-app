@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   X,
   MessageCircle,
@@ -19,6 +19,7 @@ import {
 import { Product } from '../types';
 import { createProductWhatsAppUrl } from '../utils/whatsapp';
 import { parseProductSizes, getProductCategoryHighlights } from '../utils/csvParser';
+import { getCommonColorDot } from '../utils/colorUtils';
 import { ProductImage } from './ProductImage';
 import { CheckoutModal } from './CheckoutModal';
 import { ImageViewerModal } from './ImageViewerModal';
@@ -26,7 +27,7 @@ import { ImageViewerModal } from './ImageViewerModal';
 interface ProductModalProps {
   product: Product | null;
   onClose: () => void;
-  onAddToCart: (product: Product, size: string, quantity: number) => void;
+  onAddToCart: (product: Product, size: string, quantity: number, color?: string) => void;
   isWishlisted?: boolean;
   onToggleWishlist?: (product: Product) => void;
   recentlyViewed?: Product[];
@@ -48,6 +49,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const parsedSizesInfo = parseProductSizes(product.sizes);
   const [selectedSize, setSelectedSize] = useState<string>(parsedSizesInfo.sizes[0] || 'Free Size');
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(
+    product.colors && product.colors.length > 0 ? product.colors[0] : undefined
+  );
   const [quantity, setQuantity] = useState<number>(1);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [addedToast, setAddedToast] = useState<boolean>(false);
@@ -59,6 +63,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Touch tracking for swipe left/right on main image
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const touchMovedRef = useRef<boolean>(false);
 
   // Compute the last 3 products clicked by the user (excluding active product)
   const clickedRecent = (recentlyViewed || []).filter((p) => p.id !== product.id);
@@ -80,10 +89,25 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       const parsed = parseProductSizes(product.sizes);
       setSelectedSize(parsed.sizes[0] || 'Free Size');
       setQuantity(1);
-      setActiveImageIndex(0);
       setAddedToast(false);
       setScrollY(0);
       setIsEntranceZoom(true);
+
+      const defaultColor = product.colors && product.colors.length > 0 ? product.colors[0] : undefined;
+      setSelectedColor(defaultColor);
+
+      const defaultColorImg = defaultColor && product.colorMap ? product.colorMap[defaultColor.toLowerCase()] : undefined;
+      const gList = product.images && product.images.length > 0 ? product.images : [];
+      const initialDisplay = [...gList];
+      if (defaultColorImg && !initialDisplay.includes(defaultColorImg)) {
+        initialDisplay.push(defaultColorImg);
+      }
+      if (defaultColorImg) {
+        const idx = initialDisplay.indexOf(defaultColorImg);
+        setActiveImageIndex(idx >= 0 ? idx : 0);
+      } else {
+        setActiveImageIndex(0);
+      }
 
       if (modalContainerRef.current) {
         modalContainerRef.current.scrollTop = 0;
@@ -96,6 +120,73 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [product]);
+
+  // Gallery images from sheet IMAGE column
+  const galleryImages = product.images && product.images.length > 0 ? product.images : [];
+  const activeColorImage = selectedColor && product.colorMap ? product.colorMap[selectedColor.toLowerCase()] : undefined;
+
+  // Below main image, show all gallery images (from IMAGE) plus the selected color's image
+  const displayImages = useMemo(() => {
+    const list = [...galleryImages];
+    if (activeColorImage && !list.includes(activeColorImage)) {
+      list.push(activeColorImage);
+    }
+    return list.length > 0 ? list : [''];
+  }, [galleryImages, activeColorImage]);
+
+  const prevImage = () => {
+    setActiveImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
+  };
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleSelectColor = (colorName: string) => {
+    setSelectedColor(colorName);
+    const colorImg = product.colorMap ? product.colorMap[colorName.toLowerCase()] : undefined;
+    if (colorImg) {
+      // Switch main image to that color's image from COLOR IMAGES
+      const list = [...galleryImages];
+      if (!list.includes(colorImg)) {
+        list.push(colorImg);
+      }
+      const idx = list.indexOf(colorImg);
+      setActiveImageIndex(idx >= 0 ? idx : 0);
+    }
+    // If that color has no image, keep the current image
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    touchMovedRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = Math.abs(e.touches[0].clientX - touchStartXRef.current);
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+    if (deltaX > 8 || deltaY > 8) {
+      touchMovedRef.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) >= 35) {
+      if (deltaX < 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+  };
 
   // Handle escape key
   useEffect(() => {
@@ -125,7 +216,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const handleAddToCart = () => {
-    onAddToCart(product, selectedSize, quantity);
+    onAddToCart(product, selectedSize, quantity, selectedColor);
     setAddedToast(true);
     setTimeout(() => {
       setAddedToast(false);
@@ -175,16 +266,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     } else {
       handleCopyLink();
     }
-  };
-
-  const imageList = product.images.length > 0 ? product.images : [''];
-
-  const prevImage = () => {
-    setActiveImageIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1));
-  };
-
-  const nextImage = () => {
-    setActiveImageIndex((prev) => (prev === imageList.length - 1 ? 0 : prev + 1));
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -264,9 +345,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           {/* Left Side: Image Gallery with Reduced Height & Parallax Depth */}
           <div className="w-full md:w-5/12 flex flex-col bg-[#FAFAFA] p-4 sm:p-5 border-b md:border-b-0 md:border-r border-neutral-200 shrink-0 justify-between">
           <div
-            onClick={() => setIsViewerOpen(true)}
-            className="relative h-56 sm:h-64 md:h-72 w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/70 cursor-zoom-in group/img"
-            title="Tap to zoom image"
+            onClick={() => {
+              if (!touchMovedRef.current) {
+                setIsViewerOpen(true);
+              }
+            }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="relative h-56 sm:h-64 md:h-72 w-full rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/70 cursor-zoom-in group/img select-none"
+            title="Tap to zoom image (swipe left/right to change)"
           >
             {/* Scroll-based parallax depth & entrance zoom */}
             <div
@@ -282,7 +370,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               }}
             >
               <ProductImage
-                src={imageList[activeImageIndex]}
+                src={displayImages[activeImageIndex] || displayImages[0]}
                 alt={`${product.name} - view ${activeImageIndex + 1}`}
                 productName={product.name}
                 category={product.category}
@@ -325,7 +413,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             )}
 
             {/* Image Nav Arrows (if more than 1 image) */}
-            {imageList.length > 1 && (
+            {displayImages.length > 1 && (
               <>
                 <button
                   onClick={(e) => {
@@ -351,18 +439,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             )}
           </div>
 
-          {/* Thumbnails (only if multiple images) */}
-          {imageList.length > 1 && (
-            <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
-              {imageList.map((img, idx) => (
+          {/* Thumbnails of all gallery images plus the selected color's image */}
+          {displayImages.length > 1 && (
+            <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 scrollbar-none">
+              {displayImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={`w-12 h-12 rounded-lg overflow-hidden border transition cursor-pointer shrink-0 ${
                     activeImageIndex === idx
-                      ? 'border-[#1A1A1A] ring-1 ring-[#1A1A1A]'
+                      ? 'border-[#1A1A1A] ring-2 ring-[#EA580C]/40'
                       : 'border-neutral-200 opacity-60 hover:opacity-100'
                   }`}
+                  aria-label={`View thumbnail ${idx + 1}`}
                 >
                   <ProductImage
                     src={img}
@@ -409,6 +498,54 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </span>
               )}
             </div>
+
+            {/* Color Selector (Above size selector) */}
+            {product.colors && product.colors.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold text-neutral-700">Color:</span>
+                    <span className="text-[#1A1A1A] font-bold">
+                      {selectedColor || product.colors[0]}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map((color) => {
+                    const isSelected = (selectedColor || product.colors![0]) === color;
+                    const dot = getCommonColorDot(color);
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => handleSelectColor(color)}
+                        className={`min-h-[38px] px-3.5 py-1.5 rounded-xl text-xs font-heading font-semibold transition-all duration-150 cursor-pointer flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] shadow-xs scale-102 ring-2 ring-[#EA580C]/40'
+                            : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-400 hover:text-black'
+                        }`}
+                        aria-pressed={isSelected}
+                      >
+                        {dot && (
+                          <span
+                            className="w-3 h-3 rounded-full shrink-0 shadow-2xs"
+                            style={{
+                              backgroundColor: dot.bg,
+                              border: dot.border
+                                ? `1px solid ${dot.border}`
+                                : isSelected && dot.bg.toLowerCase() === '#ffffff'
+                                ? '1px solid #FFFFFF'
+                                : '1px solid rgba(0,0,0,0.15)',
+                            }}
+                          />
+                        )}
+                        <span>{color}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Size Selector */}
             {isFreeSize ? (
@@ -534,7 +671,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               </span>
               <span className="flex items-center gap-1">
                 <RefreshCw className="w-3.5 h-3.5 text-neutral-700" />
-                7-Day Exchange
+                Exchange Policy
               </span>
             </div>
           </div>
@@ -659,6 +796,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           {
             name: product.name.toUpperCase(),
             size: selectedSize,
+            color: selectedColor,
             quantity,
             price: product.price,
           },
@@ -672,8 +810,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       {/* Fullscreen Image Zoom Viewer */}
       {isViewerOpen && (
         <ImageViewerModal
-          images={imageList}
-          initialIndex={activeImageIndex}
+          images={displayImages}
+          initialIndex={Math.min(activeImageIndex, displayImages.length - 1)}
           productName={product.name}
           onClose={() => setIsViewerOpen(false)}
         />

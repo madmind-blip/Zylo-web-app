@@ -55,6 +55,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     return {
       name: item.product.name.toUpperCase(),
       size: item.selectedSize || 'Free Size',
+      color: item.selectedColor,
       quantity: item.quantity,
       price: item.product.price,
     };
@@ -166,7 +167,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       {/* Thumbnail using ProductImage */}
                       <div className="w-20 h-24 rounded-lg overflow-hidden bg-neutral-100 shrink-0 border border-neutral-200/80">
                         <ProductImage
-                          src={item.product.images[0]}
+                          src={
+                            (item.selectedColor && item.product.colorMap
+                              ? item.product.colorMap[item.selectedColor.toLowerCase()]
+                              : undefined) || item.product.images[0]
+                          }
                           alt={`${item.product.name} — shopping bag item`}
                           productName={item.product.name}
                           category={item.product.category}
@@ -199,8 +204,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                               <div className="truncate">• Watch: {item.comboItems.watch.name}</div>
                             </div>
                           ) : (
-                            <div className="inline-block px-2 py-0.5 rounded text-[10px] bg-white border border-neutral-200 text-neutral-600 font-medium mt-1">
-                              Size: {item.selectedSize}
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              {item.selectedSize && (
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-white border border-neutral-200 text-neutral-600 font-medium">
+                                  Size: {item.selectedSize}
+                                </span>
+                              )}
+                              {item.selectedColor && (
+                                <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-white border border-neutral-200 text-neutral-600 font-medium">
+                                  Color: {item.selectedColor}
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>

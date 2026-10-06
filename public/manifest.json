@@ -1,0 +1,16 @@
+{
+  "name": "Zyle | Everything. Elevated.",
+  "short_name": "Zyle",
+  "description": "Curated streetwear combos, luxury watches, and elevated everyday essentials.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E4EEF0",
+  "theme_color": "#16232A",
+  "icons": [
+    {
+      "src": "/ze_logo_transparent-1.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

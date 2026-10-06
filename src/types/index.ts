@@ -14,6 +14,8 @@ export interface Product {
   sizes: string[];
   isFreeSize?: boolean;
   colors?: string[];
+  colorImages?: string[];
+  colorMap?: Record<string, string>; // normalized color name -> image url
   description: string;
   details: string[];
   tags: string[];
@@ -27,6 +29,7 @@ export interface CartItem {
   id: string;
   product: Product;
   selectedSize: string;
+  selectedColor?: string;
   quantity: number;
   isCustomCombo?: boolean;
   comboItems?: {

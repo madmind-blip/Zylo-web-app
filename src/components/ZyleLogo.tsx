@@ -1,0 +1,84 @@
+import React from 'react';
+
+interface ZyleLogoProps {
+  className?: string;
+  strokeColor?: string;
+}
+
+export const ZyleLogo: React.FC<ZyleLogoProps> = ({
+  className = 'h-9 sm:h-11 md:h-12 w-auto',
+  strokeColor = 'currentColor',
+}) => {
+  return (
+    <svg
+      viewBox="6 5 500 330"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-label="Zyle Logo"
+    >
+      {/* Letter z */}
+      <path
+        d="M 12 136 H 148 L 12 280 H 148"
+        stroke={strokeColor}
+        strokeWidth="7.5"
+        strokeLinecap="butt"
+        strokeLinejoin="miter"
+      />
+
+      {/* Letter y */}
+      <path
+        d="M 152 136 L 254 262"
+        stroke={strokeColor}
+        strokeWidth="7.5"
+        strokeLinecap="butt"
+      />
+      <path
+        d="M 320 136 L 218 326"
+        stroke={strokeColor}
+        strokeWidth="7.5"
+        strokeLinecap="butt"
+      />
+
+      {/* Horizontal Thread through Needle Eye */}
+      <path
+        d="M 206 38 C 260 36.2, 310 35.8, 330 35.8 C 350 35.8, 400 36.2, 446 38 C 400 39.8, 350 40.2, 330 40.2 C 310 40.2, 260 39.8, 206 38 Z"
+        fill={strokeColor}
+      />
+
+      {/* Needle (Letter l) with eye slit and pointed tip */}
+      <path
+        d="
+          M 330 8
+          C 334 10, 337 18, 337 30
+          C 337 46, 336 62, 334 78
+          L 334 230
+          L 330 286
+          L 326 230
+          L 326 78
+          C 324 62, 323 46, 323 30
+          C 323 18, 326 10, 330 8
+          Z
+          M 330 20
+          C 328 20, 327.5 24, 327.5 32
+          C 327.5 44, 327.5 50, 327.5 56
+          C 327.5 60, 328.5 62, 330 62
+          C 331.5 62, 332.5 60, 332.5 56
+          C 332.5 50, 332.5 44, 332.5 32
+          C 332.5 24, 332 20, 330 20
+          Z
+        "
+        fill={strokeColor}
+        fillRule="evenodd"
+      />
+
+      {/* Letter e */}
+      <path
+        d="M 348 208 H 498 A 75 75 0 0 0 348 208 A 75 75 0 0 0 492 252"
+        stroke={strokeColor}
+        strokeWidth="7.5"
+        strokeLinecap="butt"
+      />
+    </svg>
+  );
+};

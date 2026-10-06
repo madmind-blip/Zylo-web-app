@@ -404,18 +404,72 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
     const { sizes, isFreeSize } = parseProductSizes(row['sizes']);
 
     // 6. Image rule:
-    // IMAGE holds direct link (e.g. i.ibb.co) or Google Drive link
+    // IMAGE holds direct link (e.g. i.ibb.co) or Google Drive link, or multiple comma-separated links
     const rawImage = row['image'] || '';
-    let formattedImage = rawImage.trim();
-    if (
-      formattedImage.includes('drive.google.com') ||
-      (!formattedImage.startsWith('http') && formattedImage.length >= 20)
-    ) {
-      formattedImage = formatGoogleDriveUrl(formattedImage);
+    const images: string[] = [];
+    if (rawImage && rawImage.trim()) {
+      const parts = rawImage.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
+      for (const p of parts) {
+        let formatted = p;
+        if (
+          formatted.includes('drive.google.com') ||
+          (!formatted.startsWith('http') && formatted.length >= 20)
+        ) {
+          formatted = formatGoogleDriveUrl(formatted);
+        }
+        if (formatted) {
+          images.push(formatted);
+        }
+      }
     }
-    const images = formattedImage ? [formattedImage] : [];
 
-    // 7. Description & Tags & Details
+    // 7. Colors & Color Images rules:
+    // COLORS: comma-separated color names (e.g. "Black, Navy, Olive")
+    // COLOR IMAGES: comma-separated image links, in the same order as COLORS (first link belongs to first color, and so on)
+    // Match headers ignoring case and trailing spaces. If COLORS is blank, show no color selector and keep the product behaving exactly as it does now.
+    const rawColors = row['colors'] || '';
+    const rawColorImages = row['color images'] || row['colorimages'] || row['color_images'] || '';
+
+    let colors: string[] | undefined = undefined;
+    let colorImages: string[] | undefined = undefined;
+    let colorMap: Record<string, string> | undefined = undefined;
+
+    if (rawColors && rawColors.trim()) {
+      const parsedColors = rawColors
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean);
+
+      if (parsedColors.length > 0) {
+        colors = parsedColors;
+
+        if (rawColorImages && rawColorImages.trim()) {
+          const parsedImgs = rawColorImages
+            .split(/[\n,]+/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .map((img) => {
+              if (
+                img.includes('drive.google.com') ||
+                (!img.startsWith('http') && img.length >= 20)
+              ) {
+                return formatGoogleDriveUrl(img);
+              }
+              return img;
+            });
+
+          colorImages = parsedImgs;
+          colorMap = {};
+          parsedColors.forEach((colorName, cIdx) => {
+            if (parsedImgs[cIdx]) {
+              colorMap![colorName.toLowerCase()] = parsedImgs[cIdx];
+            }
+          });
+        }
+      }
+    }
+
+    // 8. Description & Tags & Details
     const description =
       row['description'] ||
       `${name} — curated with guaranteed premium quality and fast nationwide doorstep delivery.`;
@@ -439,7 +493,7 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
       details = getProductCategoryHighlights(name, rawCategory, categoryGroup);
     }
 
-    // 8. Combo role for Combo Builder
+    // 9. Combo role for Combo Builder
     const nameLower = name.toLowerCase();
     const tagsLower = rawTags.toLowerCase();
     let comboRole: 'top' | 'bottom' | 'watch' | undefined = undefined;
@@ -489,6 +543,9 @@ export function mapRowsToProducts(rows: Record<string, string>[]): Product[] {
       images,
       sizes,
       isFreeSize,
+      colors,
+      colorImages,
+      colorMap,
       description,
       details,
       tags,

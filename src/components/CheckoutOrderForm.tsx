@@ -202,16 +202,27 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
           <span className="font-heading font-bold text-sm">₹{total}</span>
         </div>
         <div className="space-y-1 text-neutral-600 max-h-24 overflow-y-auto pr-1">
-          {items.map((it, idx) => (
-            <div key={idx} className="flex justify-between items-center text-[11px]">
-              <span className="truncate max-w-[200px] sm:max-w-[240px] uppercase">
-                {it.name.toUpperCase()}
-                {it.size && it.size.toLowerCase() !== 'free size' ? ` (Size: ${it.size})` : ''}
-                {it.quantity > 1 ? ` x${it.quantity}` : ''}
-              </span>
-              <span className="font-medium shrink-0">₹{it.price * it.quantity}</span>
-            </div>
-          ))}
+          {items.map((it, idx) => {
+            const parts: string[] = [];
+            if (it.size && it.size.toLowerCase() !== 'free size') {
+              parts.push(`Size: ${it.size}`);
+            }
+            if (it.color) {
+              parts.push(`Color: ${it.color}`);
+            }
+            const variantPart = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+
+            return (
+              <div key={idx} className="flex justify-between items-center text-[11px]">
+                <span className="truncate max-w-[200px] sm:max-w-[240px] uppercase">
+                  {it.name.toUpperCase()}
+                  {variantPart}
+                  {it.quantity > 1 ? ` x${it.quantity}` : ''}
+                </span>
+                <span className="font-medium shrink-0">₹{it.price * it.quantity}</span>
+              </div>
+            );
+          })}
         </div>
         {shippingFee !== undefined && subtotal !== undefined && (
           <div className="mt-2 pt-2 border-t border-neutral-200/60 flex justify-between text-[11px] text-neutral-500 font-mono">
@@ -492,7 +503,7 @@ export const CheckoutOrderForm: React.FC<CheckoutOrderFormProps> = ({
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-neutral-500 mt-2 text-center">
           <ShieldCheck className="w-3.5 h-3.5 text-[#EA580C] shrink-0" />
-          <span>Fast nationwide delivery • 7-day easy size exchange</span>
+          <span>Fast nationwide delivery • Verified vendor fulfillment</span>
         </div>
       </div>
     </form>

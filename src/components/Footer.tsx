@@ -3,6 +3,7 @@ import { MessageCircle, Instagram, MapPin, Phone, ShieldCheck, Heart } from 'luc
 import { BRAND } from '../data/content';
 import { getWhatsAppNumberClean } from '../utils/whatsapp';
 import { PolicyType } from './PolicyModal';
+import { ZyleLogo } from './ZyleLogo';
 
 interface FooterProps {
   onOpenPolicy: (type: PolicyType) => void;
@@ -49,11 +50,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="space-y-4">
-            <div className="flex items-baseline gap-1">
-              <span className="font-heading font-extrabold text-2xl tracking-tight text-[#1A1A1A]">
-                ZYLE
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1A1A1A]"></span>
+            <div className="flex items-center select-none py-0.5">
+              <ZyleLogo className="h-7 w-auto text-[#1A1A1A]" strokeColor="#1A1A1A" />
             </div>
 
             <p className="font-heading font-medium text-xs sm:text-sm text-neutral-700">
@@ -109,11 +107,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
                   Custom Bundle Builder
                 </a>
               </li>
-              <li>
-                <a href="#faq-section" className="hover:text-[#1A1A1A] transition-colors">
-                  Ordering & Delivery FAQ
-                </a>
-              </li>
             </ul>
           </div>
 
@@ -136,15 +129,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
                   onClick={() => onOpenPolicy('returns')}
                   className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
                 >
-                  7-Day Size Exchange & Returns
+                  Exchange & Return Policy
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => onOpenPolicy('cod')}
-                  className="hover:text-[#1A1A1A] transition-colors text-left cursor-pointer"
+                  onClick={() => onOpenPolicy('terms')}
+                  className="hover:text-[#EA580C] font-semibold transition-colors text-left cursor-pointer"
                 >
-                  Cash on Delivery (COD) Terms
+                  Terms & Conditions
                 </button>
               </li>
               <li>
@@ -212,8 +205,27 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPolicy, onNavigateContact 
           <div>
             © {new Date().getFullYear()} Zyle Store. All rights reserved.
           </div>
-          <div className="flex items-center gap-1">
-            <span>Crafted for streetwear enthusiasts nationwide</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onOpenPolicy('terms')}
+              className="hover:text-black transition-colors underline cursor-pointer"
+            >
+              Terms & Conditions
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => onOpenPolicy('returns')}
+              className="hover:text-black transition-colors underline cursor-pointer"
+            >
+              Exchange Policy
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => onOpenPolicy('shipping')}
+              className="hover:text-black transition-colors underline cursor-pointer"
+            >
+              Shipping
+            </button>
           </div>
         </div>
       </div>

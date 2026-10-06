@@ -72,29 +72,9 @@ export const Hero: React.FC<HeroProps> = ({
         </h1>
 
         {/* Subtext: Unisex, Premium Copy */}
-        <p className="font-body text-neutral-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-6 sm:mb-8 px-4">
+        <p className="font-body text-neutral-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto font-normal leading-relaxed mb-8 sm:mb-10 px-4">
           Fashion, footwear, cosmetics, and electronics — curated for effortless everyday luxury. Fast dispatch with Cash on Delivery nationwide.
         </p>
-
-        {/* Single set of feature pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-[13px] text-neutral-700 font-medium mb-8 sm:mb-10 px-4">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
-            Unisex Fashion &amp; Shoes
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
-            Cosmetics &amp; Electronics
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
-            Cash on Delivery
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EA580C]" />
-            24hr Dispatch
-          </span>
-        </div>
 
         {/* Explore Collection Button */}
         <button

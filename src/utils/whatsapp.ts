@@ -11,7 +11,8 @@ export function getWhatsAppNumberClean(): string {
 export function createProductWhatsAppUrl(
   product: Product,
   selectedSize: string,
-  quantity: number = 1
+  quantity: number = 1,
+  selectedColor?: string
 ): string {
   const phone = getWhatsAppNumberClean();
   const totalPrice = product.price * quantity;
@@ -19,13 +20,20 @@ export function createProductWhatsAppUrl(
   const shippingFee = isFreeDelivery ? 0 : BRAND.standardShippingFee;
   const grandTotal = totalPrice + shippingFee;
   const upperName = product.name.toUpperCase();
-  const sizePart = selectedSize && selectedSize.toLowerCase() !== 'free size' ? ` (Size: ${selectedSize})` : '';
+  const parts: string[] = [];
+  if (selectedSize && selectedSize.toLowerCase() !== 'free size') {
+    parts.push(`Size: ${selectedSize}`);
+  }
+  if (selectedColor) {
+    parts.push(`Color: ${selectedColor}`);
+  }
+  const variantPart = parts.length > 0 ? ` (${parts.join(', ')})` : '';
 
   const lines = [
     `🛍️ *New Order — Zyle*`,
     ``,
     `*Order Summary*`,
-    `• ${upperName}${sizePart} x${quantity} — ₹${totalPrice}`,
+    `• ${upperName}${variantPart} x${quantity} — ₹${totalPrice}`,
     ``,
     `Subtotal: ₹${totalPrice}`,
     `Delivery: ${isFreeDelivery ? 'FREE (Above ₹999)' : `₹${shippingFee}`}`,
@@ -142,8 +150,16 @@ export function createCartWhatsAppUrl(
    • Watch: ${item.comboItems.watch.name}
    = ₹${item.product.price * item.quantity}`;
     }
+    const parts: string[] = [];
+    if (item.selectedSize) {
+      parts.push(`Size: ${item.selectedSize}`);
+    }
+    if (item.selectedColor) {
+      parts.push(`Color: ${item.selectedColor}`);
+    }
+    const variantPart = parts.length > 0 ? parts.join(', ') : '';
     return `${idx + 1}. 🛍️ *${item.product.name}*
-   • Size: ${item.selectedSize} | Qty: ${item.quantity}
+   • ${variantPart ? `${variantPart} | ` : ''}Qty: ${item.quantity}
    = ₹${item.product.price * item.quantity}`;
   });
 
@@ -185,6 +201,7 @@ export interface CustomerOrderDetails {
 export interface OrderItemSummary {
   name: string;
   size?: string;
+  color?: string;
   quantity: number;
   price: number;
 }
@@ -215,9 +232,16 @@ export function createOrderWhatsAppUrl(
 
   const formattedItems = items.map((item) => {
     const upperName = item.name.toUpperCase();
-    const sizePart = item.size && item.size.toLowerCase() !== 'free size' ? ` (Size: ${item.size})` : '';
+    const parts: string[] = [];
+    if (item.size && item.size.toLowerCase() !== 'free size') {
+      parts.push(`Size: ${item.size}`);
+    }
+    if (item.color) {
+      parts.push(`Color: ${item.color}`);
+    }
+    const variantPart = parts.length > 0 ? ` (${parts.join(', ')})` : '';
     const qtyPart = item.quantity > 1 ? ` x${item.quantity}` : ` x1`;
-    return `• ${upperName}${sizePart}${qtyPart} — ₹${item.price * item.quantity}`;
+    return `• ${upperName}${variantPart}${qtyPart} — ₹${item.price * item.quantity}`;
   });
 
   const lines = [

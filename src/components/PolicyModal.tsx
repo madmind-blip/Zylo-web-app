@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, ShieldCheck, Truck, RotateCcw, Ruler } from 'lucide-react';
+import { X, ShieldCheck, Truck, RotateCcw, Ruler, FileText, AlertTriangle } from 'lucide-react';
 
-export type PolicyType = 'shipping' | 'returns' | 'cod' | 'sizing' | null;
+export type PolicyType = 'shipping' | 'returns' | 'cod' | 'terms' | 'sizing' | null;
 
 interface PolicyModalProps {
   type: PolicyType;
@@ -36,7 +36,7 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
               <p>
-                • <strong>Free Shipping:</strong> On all orders of ₹999 or more. For orders below ₹999, a flat delivery fee of ₹150 applies nationwide.
+                • <strong>Free Shipping:</strong> On all orders of ₹999 or more. For orders below ₹999, a delivery fee of ₹150 applies nationwide.
               </p>
               <p>
                 • <strong>Delivery Timelines:</strong> Major metro cities take 2 to 3 business days. Rest of India takes 3 to 5 business days.
@@ -57,46 +57,69 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({ type, onClose }) => {
               <RotateCcw className="w-5 h-5" />
             </div>
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
-              7-Day Return & Exchange Policy
+              Exchange & No Refunds Policy
             </h3>
             <p className="text-xs text-[#EA580C] font-semibold mb-4">
-              Hassle-Free Size Swaps & Quality Guarantee
+              Strict Quality Verification & Exchange Terms
             </p>
             <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
               <p>
-                • <strong>Size Exchanges:</strong> If your tee or cargo is not the right fit, we arrange a quick size replacement within 7 days of delivery.
+                • <strong>No Refunds Policy:</strong> All sales are final. We do not provide cash or monetary refunds.
               </p>
               <p>
-                • <strong>Defect Replacement:</strong> In the rare event an item arrives defective or damaged in transit, ping us on WhatsApp with an unboxing video or photo, and we will dispatch a brand-new piece immediately with no reverse shipping charges.
+                • <strong>Exchanges:</strong> Only exchanges are permitted, strictly if transit defect/damage or wrong item is proven via an uncut 360-degree unboxing video submitted within 48 hours of delivery.
               </p>
               <p>
-                • <strong>Conditions:</strong> Garments must be unwashed, unworn, with original tags intact.
+                • <strong>Unboxing Video Requirement:</strong> To be eligible for an exchange, the continuous 360-degree video must clearly display the parcel label, seal, and opening process without cuts or edits.
               </p>
             </div>
           </div>
         )}
 
-        {type === 'cod' && (
+        {(type === 'terms' || type === 'cod') && (
           <div>
             <div className="w-11 h-11 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[#1A1A1A] mb-4">
-              <ShieldCheck className="w-5 h-5" />
+              <FileText className="w-5 h-5" />
             </div>
             <h3 className="font-heading font-bold text-xl text-[#1A1A1A] mb-1">
-              Cash on Delivery (COD) Terms
+              Terms & Conditions
             </h3>
             <p className="text-xs text-[#EA580C] font-semibold mb-4">
-              Zero Prepaid Risk for Indian Shoppers
+              Platform Disclaimers & Marketplace Guidelines
             </p>
-            <div className="space-y-3 text-xs sm:text-sm text-neutral-600 leading-relaxed font-body">
-              <p>
-                • <strong>Available Nationwide:</strong> COD is valid across 19,000+ PIN codes in India through our courier partners (Bluedart, Delhivery, Xpressbees).
-              </p>
-              <p>
-                • <strong>Order Verification:</strong> To prevent duplicate and prank bookings, our team may send a 1-click confirmation prompt on WhatsApp before parcel handover to the courier.
-              </p>
-              <p>
-                • <strong>Payment Mode at Doorstep:</strong> You can pay the delivery executive in cash or scan their UPI QR code on arrival.
-              </p>
+
+            <div className="space-y-4 text-xs sm:text-sm leading-relaxed font-body">
+              {/* About ZYLE */}
+              <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200/90">
+                <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#1A1A1A] mb-1">
+                  About ZYLE
+                </h4>
+                <p className="text-neutral-600 leading-relaxed">
+                  A discovery marketplace connecting buyers directly to independent makers and suppliers.
+                </p>
+              </div>
+
+              {/* Strict Disclaimers */}
+              <div className="space-y-2.5">
+                <h4 className="font-heading font-bold text-xs uppercase tracking-wider text-[#DC2626] flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
+                  <span>Strict Disclaimers</span>
+                </h4>
+                <ol className="space-y-3 list-decimal list-inside text-neutral-600">
+                  <li className="pl-1 leading-relaxed">
+                    <strong className="text-[#1A1A1A]">Marketplace Model:</strong> We are a marketplace platform; we do not own or manufacture inventory. Products are fulfilled and dispatched directly by independent third-party vendors.
+                  </li>
+                  <li className="pl-1 leading-relaxed">
+                    <strong className="text-[#1A1A1A]">Transit Liability:</strong> ZYLE is not liable for carrier or vendor transit delays.
+                  </li>
+                  <li className="pl-1 leading-relaxed">
+                    <strong className="text-[#1A1A1A]">No Refunds Policy:</strong> All sales are final. Only exchanges are permitted, strictly if transit defect/damage or wrong item is proven via an uncut 360-degree unboxing video submitted within 48 hours of delivery.
+                  </li>
+                  <li className="pl-1 leading-relaxed">
+                    <strong className="text-[#1A1A1A]">COD Convenience Fee:</strong> Flat ₹149 COD Convenience Fee applies to all orders to cover verified logistics and courier handling.
+                  </li>
+                </ol>
+              </div>
             </div>
           </div>
         )}

@@ -2,6 +2,7 @@ import React from 'react';
 import { ShoppingBag, Heart } from 'lucide-react';
 import { Product } from '../types';
 import { ProductImage } from './ProductImage';
+import { getCommonColorDot } from '../utils/colorUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -111,7 +112,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <div className="pt-2 border-t border-neutral-100">
           {/* Price Row: Selling Price & Cut-off Price */}
-          <div className="flex items-baseline gap-2 mb-3">
+          <div className="flex items-baseline gap-2 mb-1.5">
             <span className="font-heading font-bold text-base sm:text-lg text-[#1A1A1A]">
               ₹{product.price}
             </span>
@@ -121,6 +122,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </span>
             )}
           </div>
+
+          {/* Color Dots (up to 4 small dots under price, +N if more) */}
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex items-center gap-1 mb-2.5 h-3.5">
+              {product.colors.slice(0, 4).map((col, idx) => {
+                const dot = getCommonColorDot(col);
+                return (
+                  <span
+                    key={idx}
+                    title={col}
+                    className="w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-2xs"
+                    style={{
+                      backgroundColor: dot?.bg || '#9CA3AF',
+                      border: dot?.border ? `1px solid ${dot.border}` : '1px solid rgba(0,0,0,0.1)',
+                    }}
+                  />
+                );
+              })}
+              {product.colors.length > 4 && (
+                <span className="text-[10px] text-neutral-400 font-medium leading-none ml-0.5">
+                  +{product.colors.length - 4}
+                </span>
+              )}
+            </div>
+          )}
+          {(!product.colors || product.colors.length === 0) && (
+            <div className="h-0 mb-1" />
+          )}
 
           {/* Add to Bag Button */}
           {isSoldOut ? (

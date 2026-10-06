@@ -11,7 +11,6 @@ import { ProductCard } from './components/ProductCard';
 import { ProductModal } from './components/ProductModal';
 import { ProductSkeletonGrid } from './components/ProductSkeleton';
 import { ComboBuilder } from './components/ComboBuilder';
-import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
@@ -212,12 +211,18 @@ export default function App() {
   }, [products, selectedCategory, searchQuery, sortBy]);
 
   // Cart operations
-  const handleAddToCart = (product: Product, size?: string, quantity: number = 1) => {
+  const handleAddToCart = (product: Product, size?: string, quantity: number = 1, color?: string) => {
     const parsedSizes = parseProductSizes(product.sizes);
     const itemSize = size || (parsedSizes.sizes[0] || 'Free Size');
+    const itemColor = color || (product.colors && product.colors.length > 0 ? product.colors[0] : undefined);
+
     setCartItems((prev) => {
       const existingIndex = prev.findIndex(
-        (item) => item.product.id === product.id && item.selectedSize === itemSize && !item.isCustomCombo
+        (item) =>
+          item.product.id === product.id &&
+          item.selectedSize === itemSize &&
+          (item.selectedColor || '') === (itemColor || '') &&
+          !item.isCustomCombo
       );
       if (existingIndex > -1) {
         const updated = [...prev];
@@ -230,13 +235,23 @@ export default function App() {
             id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             product,
             selectedSize: itemSize,
+            selectedColor: itemColor,
             quantity,
           },
         ];
       }
     });
 
-    showToast(`Added "${product.name}" (${itemSize}) to your bag`);
+    const parts: string[] = [];
+    if (itemSize && itemSize.toLowerCase() !== 'free size') {
+      parts.push(`Size: ${itemSize}`);
+    }
+    if (itemColor) {
+      parts.push(`Color: ${itemColor}`);
+    }
+    const variantLabel = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+
+    showToast(`Added "${product.name}"${variantLabel} to your bag`);
   };
 
   const handleAddCustomComboToCart = (
@@ -388,7 +403,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#1A1A1A] selection:bg-[#1A1A1A] selection:text-white">
+    <div className="min-h-screen bg-sand text-mirage selection:bg-mirage selection:text-sand">
       {/* Cinematic entry / loading screen (plays once per session, skip on tap) */}
       {showIntro && <CinematicIntro onComplete={() => setShowIntro(false)} />}
 
@@ -435,10 +450,10 @@ export default function App() {
             <section className="py-14 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-neutral-500 mb-1">
+                  <div className="text-[11px] sm:text-xs uppercase font-medium tracking-widest text-sea mb-1">
                     Curated Collection
                   </div>
-                  <h2 className="font-heading font-bold text-2xl sm:text-3xl text-[#1A1A1A]">
+                  <h2 className="font-heading font-bold text-2xl sm:text-3xl text-mirage">
                     {selectedCategory === 'combos'
                       ? 'Clothing Combos'
                       : selectedCategory === 'watches'
@@ -456,7 +471,7 @@ export default function App() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="text-xs text-neutral-500 hover:text-black underline cursor-pointer"
+                    className="text-xs text-mirage/65 hover:text-blaze underline cursor-pointer"
                   >
                     Clear search
                   </button>
@@ -465,27 +480,27 @@ export default function App() {
 
               {isLoading ? (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium tracking-wider uppercase mb-2">
-                    <span className="w-2 h-2 rounded-full bg-[#1A1A1A] animate-ping" />
+                  <div className="flex items-center gap-2 text-xs text-mirage/65 font-medium tracking-wider uppercase mb-2">
+                    <span className="w-2 h-2 rounded-full bg-mirage animate-ping" />
                     Loading live catalog from Google Sheets...
                   </div>
                   <ProductSkeletonGrid count={8} />
                 </div>
               ) : fetchError ? (
-                <div className="py-14 px-6 max-w-lg mx-auto text-center bg-white border border-neutral-200 rounded-2xl shadow-sm relative overflow-hidden">
-                  <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mx-auto mb-4 text-[#1A1A1A]">
+                <div className="py-14 px-6 max-w-lg mx-auto text-center bg-white border border-mirage/10 rounded-2xl shadow-sm relative overflow-hidden">
+                  <div className="w-12 h-12 rounded-xl bg-sand/70 flex items-center justify-center mx-auto mb-4 text-mirage">
                     <AlertCircle className="w-6 h-6" />
                   </div>
-                  <h3 className="font-heading font-bold text-lg sm:text-xl text-[#1A1A1A] mb-2">
+                  <h3 className="font-heading font-bold text-lg sm:text-xl text-mirage mb-2">
                     Unable to Load Live Catalog
                   </h3>
-                  <p className="font-body text-xs sm:text-sm text-neutral-500 mb-6 max-w-md mx-auto leading-relaxed">
+                  <p className="font-body text-xs sm:text-sm text-mirage/65 mb-6 max-w-md mx-auto leading-relaxed">
                     {fetchError}
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <button
                       onClick={() => loadProducts()}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold transition-colors cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-mirage hover:bg-mirage/90 text-sand text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Try Again</span>
@@ -496,18 +511,18 @@ export default function App() {
                         setFetchError(null);
                         showToast('Loaded offline catalog');
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 hover:text-black border border-neutral-200 text-xs font-semibold transition-colors cursor-pointer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-sand/50 text-mirage hover:text-mirage/80 border border-mirage/10 text-xs font-semibold transition-colors cursor-pointer"
                     >
                       Load Offline Catalog
                     </button>
                   </div>
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="py-16 text-center bg-white border border-neutral-200 rounded-2xl p-8 max-w-xl mx-auto">
-                  <h3 className="font-heading font-bold text-base sm:text-lg text-[#1A1A1A] mb-2">
+                <div className="py-16 text-center bg-white border border-mirage/10 rounded-2xl p-8 max-w-xl mx-auto">
+                  <h3 className="font-heading font-bold text-base sm:text-lg text-mirage mb-2">
                     No products found
                   </h3>
-                  <p className="text-xs text-neutral-500 mb-6 font-body">
+                  <p className="text-xs text-mirage/65 mb-6 font-body">
                     {searchQuery
                       ? `No items matched "${searchQuery}".`
                       : 'No items in this category filter.'}
@@ -517,7 +532,7 @@ export default function App() {
                       setSearchQuery('');
                       setSelectedCategory('all');
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-[#EA580C] text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-mirage hover:bg-mirage/90 text-sand text-xs font-semibold transition-colors cursor-pointer"
                   >
                     View All Products
                   </button>
@@ -550,9 +565,6 @@ export default function App() {
             {/* Dedicated section anchors for nav */}
             <div id="combos-section" />
             <div id="watches-section" />
-
-            {/* 8. FAQ Section */}
-            <FAQSection />
           </>
         )}
       </main>
@@ -567,8 +579,8 @@ export default function App() {
       <ProductModal
         product={activeProduct}
         onClose={handleCloseProductModal}
-        onAddToCart={(product, size, qty) => {
-          handleAddToCart(product, size, qty);
+        onAddToCart={(product, size, qty, color) => {
+          handleAddToCart(product, size, qty, color);
         }}
         isWishlisted={activeProduct ? wishlist.some((item) => item.id === activeProduct.id) : false}
         onToggleWishlist={handleToggleWishlist}
